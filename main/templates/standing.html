@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Lobby 2017 Standing</h1>
+<hr>
+<table class="table table-striped" id="standing-table">
+  <thead class="thead-inverse">
+    <tr>
+      <th scope="row" class="text-center">Rank</th>
+      <th>Player</th>
+      <th class="hidden-xss text-center">Exact</th>
+      <th class="hidden-xss text-center">Goal</th>
+      <th class="hidden-xss text-center">Winner</th>
+      <th class="text-center">Points</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for points, username, exact, goal_difference, winner_only in puegw_zip %}
+  <div class="row">
+    <tr>
+      <th scope="row" class="text-center">{{ forloop.counter }}</th>
+      <td class="">{{ username }}</td>
+      <td class="hidden-xss text-center">{{ exact }}</td>
+      <td class="hidden-xss text-center">{{ goal_difference }}</td>
+      <td class="hidden-xss text-center">{{ winner_only }}</td>
+      <td class="text-center">{{ points }}</td>
+    </tr>
+  </div>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

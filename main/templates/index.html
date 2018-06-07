@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load my_filters %}
+
+{% block content %}
+
+<h1>Enter your predictions</h1>
+<hr>
+<form action="../place_bet/" method="post">
+  {% csrf_token %}
+  {% for game, team1_score, team2_score in gts %}
+  {% if forloop.counter0|divisibleby:2 %}
+  <div class="row">
+  {% endif %}
+    <div class="col-lg-6">
+      <table class="table table-striped" id="betting-table">
+        <tbody>
+          <tr>
+            <td class="col-xs-4 team1-col">{{ game.team1_name }}</th>
+            <td class="col-xs-2 input-score-frame">
+              {% if game.is_played %}
+              <input type="number" name="team1_score"
+                     value="{{ team1_score }}"
+                     class="input-score" readonly>
+              {% else %}
+              <input type="number" name="team1_score"
+                     value="{{ team1_score }}"
+                     class="input-score">
+              {% endif %}
+            </td>
+            <td class="col-xs-2 input-score-frame">
+              {% if game.is_played %}
+              <input type="number" name="team2_score"
+                     value="{{ team2_score }}"
+                     class="input-score" readonly>
+              {% else %}
+              <input type="number" name="team2_score"
+                     value="{{ team2_score }}"
+                     class="input-score">
+              {% endif %}
+            </td>
+            <td class="col-xs-4 team2-col">{{ game.team2_name }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  {% if forloop.counter|divisibleby:2 %}
+  </div>
+  {% endif %}
+  {% endfor %}
+  <input type="submit" value="Submit" id="submit-button" class="btn btn-lg btn-primary btn-block" />
+</form>
+
+{% endblock %}

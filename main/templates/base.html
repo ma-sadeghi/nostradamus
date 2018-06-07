@@ -1,0 +1,116 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<!-- HTML head begins -->
+<head>
+    <title>Nostradamus</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Neucha" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% if request.path == '/login/' %}
+    <link rel="stylesheet" href="{% static 'signin.css' %}">
+    {% endif %}
+</head>
+<!-- HTML head ends -->
+
+<body>
+<!-- Header begins -->
+<header>
+  <nav id="header-nav" class="navbar navbar-default" >
+    <div class="container">
+
+      <div class="navbar-header">
+        <a href="/" class=""><div id="logo-img"
+               alt="Logo image"
+               class="pull-left hidden-sm hidden-xs">
+        </div></a>
+
+        <a class="navbar-brand">Nostradamus</a>
+
+        <button type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target="#collapsable-nav"
+                aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+      </div>
+
+      <div id="collapsable-nav" class="collapse navbar-collapse">
+        <ul id="nav-list" class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'home' %}" role="button">
+              <span class="glyphicon glyphicon-home"></span>
+              <br class="hidden-xs"> Home
+          </a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}" role="button">
+              <span class="glyphicon glyphicon-log-out"></span>
+              <br class="hidden-xs"> Logout
+          </a></li>
+          {% else %}
+          <li><a href="{% url 'login' %}" role="button">
+              <span class="glyphicon glyphicon-log-in"></span>
+              <br class="hidden-xs"> Login
+          </a></li>
+          {% endif %}
+
+          <li><a href="{% url 'standing' %}" role="button">
+              <span class="glyphicon glyphicon-stats"></span>
+              <br class="hidden-xs"> Standing
+          </a></li>
+
+          <li><a href="{% url 'bets' %}" role="button">
+              <span class="glyphicon glyphicon-book"></span>
+              <br class="hidden-xs"> Bets
+          </a></li>
+
+          {% if user.is_authenticated %}
+          <li id="login-status" class="visible-lg">
+            <span>&nbsp Hi </span><span>{{ user.username }}! &nbsp</span>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</header>
+<!-- Header ends -->
+
+<!-- Main content begins -->
+<main class="container">
+{% block content %}
+{% endblock %}
+</main>
+<!-- Main content ends -->
+
+<!-- Footer begins -->
+<div class="panel-footer">
+  <div class="container">
+    <p id="copyright" class="text-center">
+      &copy; 2017<span> Lobby Betting Challenge</span><span class="hidden-xs"> - All rights reserved.</span>
+    </p>
+  </div>
+</div>
+<!-- Footer ends -->
+
+</body>
+</html>
