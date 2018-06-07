@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load my_filters %}
+
+{% block content %}
+
+<h1>Bet history</h1>
+<hr>
+<div class="container">
+<table class="table table-striped" id="bets-table">
+  <thead class="thead-inverse">
+    <tr>
+      <th class="text-center">Result</th>
+      <th class="text-center">Game</th>
+      {% for usr in users %}
+      <th><div class="diagonal text-center">{{ usr }}</div></th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for game, row in gub %}
+    <tr>
+      <td class="first-col monospace text-center">{{ game.team1_score }}-{{ game.team2_score }}</td>
+      <td class="second-col text-center">{{ game }}</td>
+      {% for bet in row %}
+      <td class="monospace text-center bets">{{ bet }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
