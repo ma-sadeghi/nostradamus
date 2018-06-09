@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{field.name}} {{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container vertical-center">
+<div class="card bg-light" id="signup-form">
+<article class="card-body mx-auto" style="max-width: 400px;">
+<h4 class="card-title mt-3 text-center">Create Account</h4>
+<p class="text-center">Get started with your free account</p>
+<form action="../signup/" method="post">
+  {% csrf_token %}
+  <!-- First Name -->
+  <div class="form-group input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+    </div>
+    <input name="first_name"
+           class="form-control"
+           placeholder="First name"
+           type="text">
+  </div>
+  <!-- Last Name -->
+  <div class="form-group input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+    </div>
+    <input name="last_name"
+           class="form-control"
+           placeholder="Last name"
+           type="text">
+  </div>
+  <!-- Username -->
+  <div class="form-group input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+    </div>
+    <input name="username"
+           class="form-control"
+           placeholder="Username"
+           type="text">
+  </div>
+  <!-- Password -->
+  <div class="form-group input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+    </div>
+    <input name="password1"
+           class="form-control"
+           placeholder="Create password"
+           type="password">
+  </div>
+  <!-- Verify Password -->
+  <div class="form-group input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+    </div>
+    <input name="password2"
+           class="form-control"
+           placeholder="Repeat password"
+           type="password">
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
+  </div>
+  <p class="text-center">Have an account? <a href="../login">Log In</a> </p>
+</form>
+</article>
+</div>
+</div> 
+
+{% endblock %}
