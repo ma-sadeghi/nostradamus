@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load my_filters %}
+
+{% block content %}
+
+<h1 class="text-center">Active competitions</h1>
+<hr>
+
+<section class="row">
+	{% for contest in contests %}
+		<a href="{url 'contest'}"><li>{{ contest }}</li></a>
+	{% endfor %}
+</section>
+
+<h1 class="text-center">Create a new competition</h1>	
+<hr>
+
+{% endblock %}

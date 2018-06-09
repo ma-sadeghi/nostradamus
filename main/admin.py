@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import Game, Bet, Team
+import inspect
+from .models import Profile, Tournament, Contest, Team, Bet, Game
 
-admin.site.register(Game)
-admin.site.register(Bet)
+admin.site.register(Profile)
+admin.site.register(Tournament)
+admin.site.register(Contest)
 admin.site.register(Team)
+admin.site.register(Bet)
+admin.site.register(Game)

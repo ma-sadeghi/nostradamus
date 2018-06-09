@@ -3,19 +3,79 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm
-from .models import Game, Bet
+from django.core.urlresolvers import reverse
+from django.views import View
+from . import forms
+from . import models
+from . import utils
 
-from .utils import get_user_points, get_correct_predictions, is_played
+
+class SignupView(View):
+
+    def get(self, request):
+        return render(request, 'signup.html')
+
+    def post(self, request):
+        form = forms.SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            if user == None:
+                return HttpResponseRedirect('/home')
+            login(request, user)
+        return render(request, 'signup.html', {'form': form})
+
+
+class LoginView(View):
+    
+    def get(self, request):
+        form = forms.LoginForm()
+        return render(request, 'login.html', {'form': form})
+
+    def post(self, request):
+        form = forms.LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user == None:
+                return HttpResponseRedirect('/login')
+            login(request, user)
+            return HttpResponseRedirect('/home')
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('../login')
 
 
 @login_required(login_url='/login/')
+def home_view(request):
+    contests = request.user.profile.contests.all()
+    contests = [contest.name for contest in contests]
+    return render(request, 'home.html', {'contests': contests})
+
+
+def contest_view(request, contest):
+    games = 2
+    users = request.user
+    return render(request, 'contest.html', {'contest': contest,
+                                            'games': games,
+                                            'users': users})
+
+
 def index(request):
+    return render(request, 'index.html')
+
+
+@login_required(login_url='/login/')
+def my_bets(request):
     games = Game.objects.all().order_by('scheduled_datetime')
     bets = Bet.objects.filter(user=request.user)
 
-    team1_score = []
-    team2_score = []
+    home_score = []
+    away_score = []
 
     for game in games:
         game.is_played = is_played(game)
@@ -31,48 +91,27 @@ def index(request):
     return render(request, 'index.html', data)
 
 
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            uname = form.cleaned_data['username']
-            pword = form.cleaned_data['password']
-            user = authenticate(username=uname, password=pword)
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect('/')
-            else:
-                return HttpResponseRedirect('/login')
-    else:
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect('/')
-
 
 def place_bet(request):
     if request.method == 'POST':
         req_dict = dict(request.POST.lists())
-        team1_score = req_dict['team1_score']
-        team2_score = req_dict['team2_score']
+        home_score = req_dict['home_score']
+        away_score = req_dict['away_score']
         games = Game.objects.all().order_by('scheduled_datetime')
         user_bets = Bet.objects.filter(user=request.user)
-        for t1, t2, g in zip(team1_score, team2_score, games):
-            bet = Bet(user=request.user, game=g, team1_score=t1,
-                      team2_score=t2)
 
+        for t1, t2, g in zip(home_score, away_score, games):
+            bet = Bet(user=request.user, game=g, home_score=t1, away_score=t2)
             if t1 == '' or t2 == '':
                 continue
-
+            # new bet
             if not user_bets.filter(game=g):
                 bet.save()
+            # update existing
             else:
                 bet = user_bets.filter(game=g)
-                bet.update(team1_score=t1)
-                bet.update(team2_score=t2)
+                bet.update(home_score=t1)
+                bet.update(away_score=t2)
 
     return HttpResponseRedirect('/standing/')
 
@@ -89,11 +128,11 @@ def show_standing(request):
     for user in users:
         points.append(get_user_points(user))
         exact_predictions.append(
-            get_correct_predictions(user, 'exact'))
+            utils.get_correct_predictions(user, 'exact'))
         goal_difference_predictions.append(
-            get_correct_predictions(user, 'goal-difference'))
+            utils.get_correct_predictions(user, 'goal-difference'))
         winner_only_predictions.append(
-            get_correct_predictions(user, 'winner-only'))
+            utils.get_correct_predictions(user, 'winner-only'))
 
     zipped = list(zip(points, usernames, exact_predictions,
                       goal_difference_predictions, winner_only_predictions))
