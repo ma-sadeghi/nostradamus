@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load my_filters %}
+
+{% block content %}
+
+<h1 class="text-center">{{ contest.name }}</h1>
+<hr>
+<h2 class="text-center">Enter your predictions</h1>
+<hr>
+<form action="{% url 'predict' contest.name %}" method="post">
+  {% csrf_token %}
+  {% for game, bet in games_and_bets %}
+  <div class="row predict-row">
+  <div class="col text-right">{{ game.home }}</div>
+  <div class="col text-center score-frame">
+	  <input type="number" name="home_score"
+	         value="{{ bet.0 }}"
+	         class="score">	
+  </div>
+  <div class="col text-center score-frame">
+	  <input type="number" name="away_score"
+	         value="{{ bet.1 }}"
+	         class="score">	
+  </div>   
+  <div class="col text-left">{{ game.away }}</div>	
+  </div>
+  {% endfor %}
+  <div class="col-md-4 col-8 mx-auto">
+  	<button type="submit" class="btn btn-primary btn-block"> Submit </button>
+  </div>
+  
+</form>
+
+{% endblock %}

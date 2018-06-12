@@ -1,0 +1,22 @@
+.home-col {
+  text-align: right;
+}
+
+.away-col {
+  text-align: left;
+}
+
+.score-frame {
+  max-width: 50px;
+  text-align: center;
+}
+
+.score {
+  max-width: 35px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.predict-row {
+  margin: 15px auto 15px auto;
+}

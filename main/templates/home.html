@@ -9,7 +9,7 @@
 
 <section class="row">
 	{% for contest in contests %}
-		<a href="{url 'contest'}"><li>{{ contest }}</li></a>
+	<a href="{% url 'predict' contest.name %}"><li>{{ contest.name }}</li></a>
 	{% endfor %}
 </section>
 
