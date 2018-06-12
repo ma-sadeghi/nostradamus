@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,12 @@ from django.views import View
 from . import forms
 from . import models
 from . import utils
+
+
+@login_required
+def index(request):
+    print(reverse('home'))
+    return render(request, 'home.html')
 
 
 class SignupView(View):
@@ -41,35 +48,39 @@ class LoginView(View):
             password = form.cleaned_data['password']
             user = authenticate(username=username, password=password)
             if user == None:
-                return HttpResponseRedirect('/login')
+                return HttpResponseRedirect(reverse('login'))
             login(request, user)
-            return HttpResponseRedirect('/home')
+            return HttpResponseRedirect(reverse('home'))
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect('../login')
+    return HttpResponseRedirect(reverse('login'))
 
 
-@login_required(login_url='/login/')
+@login_required
 def home_view(request):
-    contests = request.user.profile.contests.all()
-    contests = [contest.name for contest in contests]
+    contests = request.user.contests.all()
     return render(request, 'home.html', {'contests': contests})
 
+# NOTE: name of the 2nd arg (contest) must match with 'contest' in home.html
+class PredictView(View):
 
-def contest_view(request, contest):
-    games = 2
-    users = request.user
-    return render(request, 'contest.html', {'contest': contest,
-                                            'games': games,
-                                            'users': users})
+    def get(self, request, contest):
+        contest = request.user.contests.filter(name=contest)[0]
+        games = contest.tournament.games.all()
+        bets = []
+        for game in games:
+            bet = request.user.bets.filter(game=game)
+            bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
+            bets.append(bet)
+        return render(request, 'predict.html', {'games_and_bets': zip(games, bets),
+                                                'contest': contest})
+
+    def post(self, request):
+        pass
 
 
-def index(request):
-    return render(request, 'index.html')
-
-
-@login_required(login_url='/login/')
+@login_required
 def my_bets(request):
     games = Game.objects.all().order_by('scheduled_datetime')
     bets = Bet.objects.filter(user=request.user)

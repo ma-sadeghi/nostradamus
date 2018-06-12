@@ -1,0 +1,30 @@
+body{
+}
+
+h1 {
+  font-size: 30px;
+}
+
+#user-info {
+  font-weight: bold;
+  color: white;
+}
+
+.team1-col {
+  text-align: right;
+}
+
+.team2-col {
+  text-align: left;
+}
+
+.input-score-frame {
+  max-width: 50px;
+  text-align: center;
+}
+
+.input-score {
+  max-width: 35px;
+  text-align: center;
+  border-radius: 5px;
+}

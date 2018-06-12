@@ -14,15 +14,16 @@ class Tournament(models.Model):
 class Contest(models.Model):
     tournament = models.ForeignKey(Tournament)
     name = models.CharField(max_length=20)
-    users = models.ManyToManyField(User)
-    
+    nickname = '_'.join(str(name).strip().split())
+    users = models.ManyToManyField(User, related_name='contests')
+
     def __str__(self):
         return self.name
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    contests = models.ManyToManyField(Contest)
+    contests = models.ManyToManyField(Contest, related_name='contests')
 
     def __str__(self):
         return self.user.username
@@ -48,7 +49,7 @@ class Team(models.Model):
 
 
 class Game(models.Model):
-    tournament = models.ForeignKey(Tournament)
+    tournament = models.ForeignKey(Tournament, related_name='games')
     home = models.ForeignKey(Team, related_name='%(class)s_home')
     away = models.ForeignKey(Team, related_name='%(class)s_away')
     home_score = models.IntegerField()
@@ -60,11 +61,12 @@ class Game(models.Model):
 
 
 class Bet(models.Model):
-    user = models.ForeignKey(User)
-    game = models.ForeignKey(Game)
+    user = models.ForeignKey(User, related_name='bets')
+    game = models.ForeignKey(Game, related_name='bets')
     home_score = models.IntegerField()
     away_score = models.IntegerField()
 
     def __str__(self):
-        return self.user.username + ': ' + self.game.home + ' - ' + self.game.away
+        return self.user.username + ': ' + self.game.home.name + ' - ' + \
+                                           self.game.away.name
 
