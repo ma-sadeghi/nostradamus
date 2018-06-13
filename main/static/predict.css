@@ -20,3 +20,9 @@
 .predict-row {
   margin: 15px auto 15px auto;
 }
+
+#tournament-name {
+	color: blue;
+	font-weight: bold;
+	text-shadow: 2px;
+}

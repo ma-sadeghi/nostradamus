@@ -8,7 +8,7 @@
 
 <div class="col-12">
 	<div class="card bg-light">
-	<article class="card-body mx-auto" style="max-width: 400px;">
+	<article class="card-body mx-auto">
 		{% for contest in contests %}
 		<a href="{% url 'predict' contest.name %}"><li>{{ contest.name }}</li></a>
 		{% endfor %}
@@ -22,9 +22,9 @@
 
 <h1 class="text-center">Join a Public Competition</h1>
 
-<div class="col-12">
+<div class="col-12 col-xs-12">
 	<div class="card bg-light">
-	<article class="card-body mx-auto" style="max-width: 400px;">
+	<article class="card-body mx-auto">
 	<form action="{% url 'join_contest' %}" method="post">
 	  {% csrf_token %}
 	  <div class="form-group input-group">
