@@ -13,8 +13,8 @@ from . import utils
 
 @login_required
 def index(request):
-    print(reverse('home'))
-    return render(request, 'home.html')
+    # return render(request, 'home.html')
+    return HttpResponseRedirect(reverse('home'))
 
 
 class SignupView(View):
@@ -62,45 +62,43 @@ def home_view(request):
     contests = request.user.contests.all()
     return render(request, 'home.html', {'contests': contests})
 
+
 # NOTE: name of the 2nd arg (contest) must match with 'contest' in home.html
 class PredictView(View):
 
     def get(self, request, contest):
         contest = request.user.contests.filter(name=contest)[0]
-        games = contest.tournament.games.all()
+        games = contest.tournament.games.all().order_by('scheduled_datetime')
         bets = []
         for game in games:
-            bet = request.user.bets.filter(game=game)
+            bet = request.user.bets.filter(game=game, contest=contest)
             bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
             bets.append(bet)
         return render(request, 'predict.html', {'games_and_bets': zip(games, bets),
                                                 'contest': contest})
 
-    def post(self, request):
-        pass
+    def post(self, request, contest):
+        req_dict = dict(request.POST.lists())
+        home_scores = req_dict['home_score']
+        away_scores = req_dict['away_score']
 
+        contest = request.user.contests.filter(name=contest)[0]
+        games = contest.tournament.games.all().order_by('scheduled_datetime')
 
-@login_required
-def my_bets(request):
-    games = Game.objects.all().order_by('scheduled_datetime')
-    bets = Bet.objects.filter(user=request.user)
-
-    home_score = []
-    away_score = []
-
-    for game in games:
-        game.is_played = is_played(game)
-        if bets.filter(game=game):
-            team1_score.append(bets.filter(game=game)[0].team1_score)
-            team2_score.append(bets.filter(game=game)[0].team2_score)
-        else:
-            team1_score.append('')
-            team2_score.append('')
-
-    data = {'gts': zip(games, team1_score, team2_score)}
-
-    return render(request, 'index.html', data)
-
+        for home_score, away_score, game in zip(home_scores, away_scores, games):
+            bet_query = request.user.bets.filter(game=game, contest=contest)
+            old_bet = [bet_query[0].home_score, bet_query[0].away_score] if bet_query else ['','']
+            if home_score != old_bet[0] or away_score != old_bet[1]:
+                if bet_query: # update existing
+                    bet_query.update(home_score=home_score)
+                    bet_query.update(away_score=away_score)
+                else:
+                    new_bet = models.Bet(
+                        user=request.user, game=game, contest=contest,
+                        home_score=home_score, away_score=away_score
+                    )
+                    new_bet.save()
+        return HttpResponseRedirect('./')
 
 
 def place_bet(request):
@@ -126,65 +124,47 @@ def place_bet(request):
 
     return HttpResponseRedirect('/standing/')
 
-@login_required
-def show_standing(request):
-    users = User.objects.all()
-    usernames = [user.first_name or user.get_username() for user in users]
 
-    points = []
-    exact_predictions = []
-    goal_difference_predictions = []
-    winner_only_predictions = []
+@login_required
+def standing_home_view(request):
+    contests = request.user.contests.all()
+    return render(request, 'standing_home.html', {'contests': contests})
+
+
+@login_required
+def show_standing(request, contest):
+    contest = request.user.contests.filter(name=contest).all()[0]
+    users = contest.users.all()
+    rows = []
 
     for user in users:
-        points.append(get_user_points(user))
-        exact_predictions.append(
-            utils.get_correct_predictions(user, 'exact'))
-        goal_difference_predictions.append(
-            utils.get_correct_predictions(user, 'goal-difference'))
-        winner_only_predictions.append(
-            utils.get_correct_predictions(user, 'winner-only'))
+        se = utils.get_correct_predictions(user, contest, 'exact')
+        sg = utils.get_correct_predictions(user, contest, 'goal-difference')
+        sw = utils.get_correct_predictions(user, contest, 'winner-only')
 
-    zipped = list(zip(points, usernames, exact_predictions,
-                      goal_difference_predictions, winner_only_predictions))
-    zipped.sort()
-    p, u, e, g, w = zip(*zipped)
-    p, u, e, g, w = list(p), list(u),list(e), list(g), list(w)
+        row = []
+        row.append(user)
+        row.append(se)
+        row.append(sg)
+        row.append(sw)
+        row.append(se*3 + sg*2 + sw*1)
+        rows.append(row)
 
-    [arr.reverse() for arr in [p, u, e, g, w]]
-
-    data = {'puegw_zip': zip(p, u, e, g, w)}
+    rows = sorted(rows, key=lambda x:x[4], reverse=True)
+    data = {'rows': rows,
+            'contest': contest.name}
 
     return render(request, 'standing.html', data)
 
 
 @login_required
-def show_bets(request):
-    games = Game.objects.all().order_by('scheduled_datetime')
-    games_copy = games
-    games = []
-
-    for game in games_copy:
-        if is_played(game):
-            games.append(game)
-
-    bets = Bet.objects.all()
-    users = User.objects.all()
-    usernames = [user.first_name or user.get_username() for user in users]
-
-    user_bets = [[] for i in range(len(games))]
-
-    for i, game in enumerate(games):
-        game_bets = bets.filter(game=game)
-        for usr in users:
-            user_bet = game_bets.filter(user=usr)
-            if not user_bet:
-                user_bets[i].append('-')
-            else:
-                user_bet = user_bet[0]
-                bet = str(user_bet.team1_score) + '-' + str(user_bet.team2_score)
-                user_bets[i].append(bet)
-
-    data = {'games': games, 'users': usernames, 'gub': zip(games, user_bets)}
-
-    return render(request, 'bets.html', data)
+def join_contest(request):
+    user = request.user
+    contest_id = request.POST['contest-id']
+    contest = models.Contest.objects.filter(name=contest_id)
+    if not contest:
+        return HttpResponseRedirect(reverse('home'))
+    contest = contest[0]
+    if user not in contest.users.all():
+        contest.users.add(user)
+    return HttpResponseRedirect(reverse('predict', kwargs={'contest': contest.name}))

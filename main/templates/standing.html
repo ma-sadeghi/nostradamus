@@ -3,33 +3,32 @@
 
 {% block content %}
 
-<h1>Lobby 2017 Standing</h1>
-<hr>
-<table class="table table-striped" id="standing-table">
-  <thead class="thead-inverse">
+<section class="container">
+<h1 class="text-center">{{ contest }} 's Standing</h1>
+<table class="table table-hover">
+  <thead>
     <tr>
-      <th scope="row" class="text-center">Rank</th>
-      <th>Player</th>
-      <th class="hidden-xss text-center">Exact</th>
-      <th class="hidden-xss text-center">Goal</th>
-      <th class="hidden-xss text-center">Winner</th>
-      <th class="text-center">Points</th>
+      <th class="text-center" scope="col">Rank</th>
+      <th class="text-center" scope="col">Player</th>      
+      <th class="text-center" scope="col">Exact</th>
+      <th class="text-center" scope="col">Goal</th>
+      <th class="text-center" scope="col">Winner</th>
+      <th class="text-center" scope="col">Points</th>
     </tr>
   </thead>
   <tbody>
-  {% for points, username, exact, goal_difference, winner_only in puegw_zip %}
-  <div class="row">
+{% for row in rows %}
     <tr>
-      <th scope="row" class="text-center">{{ forloop.counter }}</th>
-      <td class="">{{ username }}</td>
-      <td class="hidden-xss text-center">{{ exact }}</td>
-      <td class="hidden-xss text-center">{{ goal_difference }}</td>
-      <td class="hidden-xss text-center">{{ winner_only }}</td>
-      <td class="text-center">{{ points }}</td>
+      <th class="text-center" scope="row">{{ forloop.counter }}</th>
+      <td class="text-center">{{ row.0 }}</td>
+      <td class="text-center">{{ row.1 }}</td>
+      <td class="text-center">{{ row.2 }}</td>
+      <td class="text-center">{{ row.3 }}</td>
+      <td class="text-center">{{ row.4 }}</td>
     </tr>
-  </div>
-  {% endfor %}
+{% endfor %}
   </tbody>
 </table>
+</section>
 
 {% endblock %}

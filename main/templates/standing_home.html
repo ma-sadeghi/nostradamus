@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<h1 class="text-center">Active Standing Tables</h1>
+<div class="col-12">
+	<div class="card bg-light">
+	<article class="card-body mx-auto" style="max-width: 400px;">
+	  {% for contest in contests %}
+	  <a href="{% url 'standing' contest.name %}"><li>{{ contest.name }}</li></a>
+	  {% endfor %}
+	</article>
+	</div>
+</div>
+
+{% endblock %}

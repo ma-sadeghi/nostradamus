@@ -4,16 +4,45 @@
 
 {% block content %}
 
-<h1 class="text-center">Active competitions</h1>
-<hr>
+<h1 class="text-center">Active Competitions</h1>
 
-<section class="row">
-	{% for contest in contests %}
-	<a href="{% url 'predict' contest.name %}"><li>{{ contest.name }}</li></a>
-	{% endfor %}
-</section>
+<div class="col-12">
+	<div class="card bg-light">
+	<article class="card-body mx-auto" style="max-width: 400px;">
+		{% for contest in contests %}
+		<a href="{% url 'predict' contest.name %}"><li>{{ contest.name }}</li></a>
+		{% endfor %}
+	</article>
+	</div>
+</div>
 
-<h1 class="text-center">Create a new competition</h1>	
-<hr>
+<div class="row">
+	<hr>
+</div>
+
+<h1 class="text-center">Join a Public Competition</h1>
+
+<div class="col-12">
+	<div class="card bg-light">
+	<article class="card-body mx-auto" style="max-width: 400px;">
+	<form action="{% url 'join_contest' %}" method="post">
+	  {% csrf_token %}
+	  <div class="form-group input-group">
+	    <div class="input-group-prepend">
+	      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+	    </div>
+	    <input name="contest-id"
+	           class="form-control"
+	           placeholder="Competition ID"
+	           type="text">
+	  </div>
+	  <div class="form-group">
+	    <button type="submit" class="btn btn-primary btn-block"> Join Competition </button>
+	  </div>
+	</form>
+	</article>
+	</div>
+</div>
+
 
 {% endblock %}
