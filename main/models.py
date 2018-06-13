@@ -14,8 +14,11 @@ class Tournament(models.Model):
 class Contest(models.Model):
     tournament = models.ForeignKey(Tournament)
     name = models.CharField(max_length=20)
-    nickname = '_'.join(str(name).strip().split())
     users = models.ManyToManyField(User, related_name='contests')
+
+    def save(self, *args, **kwargs):
+        self.name = '_'.join(self.name.strip().split())
+        return super(Contest, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -63,10 +66,10 @@ class Game(models.Model):
 class Bet(models.Model):
     user = models.ForeignKey(User, related_name='bets')
     game = models.ForeignKey(Game, related_name='bets')
+    contest = models.ForeignKey(Contest, related_name='bets')
     home_score = models.IntegerField()
     away_score = models.IntegerField()
 
     def __str__(self):
-        return self.user.username + ': ' + self.game.home.name + ' - ' + \
-                                           self.game.away.name
+        return self.user.username + ' : ' + str(self.contest) + ' : ' + str(self.game)
 

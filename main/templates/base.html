@@ -22,73 +22,7 @@
 </head>
 
 <body>
-<!-- Header begins -->
-<!-- <header>
-  <nav id="header-nav" class="navbar navbar-default" >
-    <div class="container">
 
-      <div class="navbar-header">
-        <a href="/" class=""><div id="logo-img"
-               alt="Logo image"
-               class="pull-left hidden-sm hidden-xs">
-        </div></a>
-
-        <a class="navbar-brand">Nostradamus</a>
-
-        <button type="button"
-                class="navbar-toggle collapsed"
-                data-toggle="collapse"
-                data-target="#collapsable-nav"
-                aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-
-      </div>
-
-      <div id="collapsable-nav" class="collapse navbar-collapse">
-        <ul id="nav-list" class="nav navbar-nav navbar-right">
-          <li><a href="{% url 'home' %}" role="button">
-              <span class="glyphicon glyphicon-home"></span>
-              <br class="hidden-xs"> Home
-          </a></li>
-          {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}" role="button">
-              <span class="glyphicon glyphicon-log-out"></span>
-              <br class="hidden-xs"> Logout
-          </a></li>
-          {% else %}
-          <li><a href="{% url 'login' %}" role="button">
-              <span class="glyphicon glyphicon-log-in"></span>
-              <br class="hidden-xs"> Login
-          </a></li>
-          {% endif %}
-
-          <li><a href="{% url 'standing' %}" role="button">
-              <span class="glyphicon glyphicon-stats"></span>
-              <br class="hidden-xs"> Standing
-          </a></li>
-
-          <li><a href="{% url 'bets' %}" role="button">
-              <span class="glyphicon glyphicon-book"></span>
-              <br class="hidden-xs"> Bets
-          </a></li>
-
-          {% if user.is_authenticated %}
-          <li id="login-status" class="visible-lg">
-            <span>&nbsp Hi </span><span>{{ user.username }}! &nbsp</span>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-
-    </div>
-  </nav>
-</header> -->
 <header>
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -99,10 +33,10 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="../predict">Predict<span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../standing">Standing</a>
+          <a class="nav-link" href="{% url 'standing_home' %}">Standing</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -114,7 +48,7 @@
 </header>
 
 <!-- Main content begins -->
-<div class="container">
+<div class="container outer-container">
 {% block content %}
 {% endblock %}
 </div>
@@ -122,7 +56,7 @@
 <!-- Footer begins -->
 <footer class="footer">
   <div class="container text-center">
-    <span class="text-muted" style="font-variant: small-caps;">&copy; Copyright 2018 by Amin Sadeghi - Contact me at amin.sadeghi@live.com</span>
+    <span class="text-muted" style="font-variant: small-caps;">&copy; Copyright 2018 by Amin Sadeghi - Contact me at amin [dot] sadeghi [at] live [dot] com</span>
   </div>
 </footer>
 

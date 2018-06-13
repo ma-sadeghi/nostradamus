@@ -1,8 +1,12 @@
-body{
+html, body{
+  /*height: 100%;*/
+  margin-top: 20px;
 }
 
 h1 {
   font-size: 30px;
+  margin: 25px auto 25px auto;
+  font-variant: small-caps;
 }
 
 #user-info {
@@ -27,4 +31,8 @@ h1 {
   max-width: 35px;
   text-align: center;
   border-radius: 5px;
+}
+
+.outer-container {
+  /*background-color: gray;*/
 }
