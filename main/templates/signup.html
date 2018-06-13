@@ -18,11 +18,11 @@
     {% endfor %}
 {% endif %}
 
-<div class="container vertical-center">
+<div class="container vertical-center col-12">
 <div class="card bg-light" id="signup-form">
-<article class="card-body mx-auto" style="max-width: 400px;">
+<article class="card-body mx-auto">
 <h4 class="card-title mt-3 text-center">Create Account</h4>
-<p class="text-center">Get started with your free account</p>
+<!-- <p class="text-center">Get started with your free account</p> -->
 <form action="{% url 'signup' %}" method="post">
   {% csrf_token %}
   <!-- First Name -->

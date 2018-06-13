@@ -8,6 +8,11 @@
     <title>Nostradamus</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Neucha" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js" integrity="sha384-u/bQvRA/1bobcXlcEYpsEdFVK/vJs3+T+nXLsBYJthmdBuavHvAW6UsmqO2Gd/F9" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
@@ -42,7 +47,7 @@
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>        
       </ul>
-      <span id="user-info">Welcome {{request.user.username}}!</span>
+      <span class="d-none d-md-block" id="user-info">Welcome <span id="username">{{request.user.username}}</span>!</span>
     </div>
   </nav>
 </header>
@@ -54,9 +59,9 @@
 </div>
 
 <!-- Footer begins -->
-<footer class="footer">
+<footer class="footer bg-dark">
   <div class="container text-center">
-    <span class="text-muted" style="font-variant: small-caps;">&copy; Copyright 2018 by Amin Sadeghi - Contact me at amin [dot] sadeghi [at] live [dot] com</span>
+    <span class="text-muted" style="font-variant: small-caps;">&copy; Copyright 2018 by Amin Sadeghi</span>
   </div>
 </footer>
 

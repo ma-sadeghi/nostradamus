@@ -25,7 +25,8 @@ SECRET_KEY = '***SCRUBBED-SECRET-KEY***'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.tinyflask.com']
+ALLOWED_HOSTS = ['www.tinyflask.com',
+                 '127.0.0.1']
 
 LOGIN_URL = '/accounts/login/'
 

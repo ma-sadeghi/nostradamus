@@ -6,13 +6,19 @@ html, body{
 
 h1 {
   font-size: 30px;
-  margin: 25px auto 25px auto;
+  /*margin: 25px auto 25px auto;*/
   font-variant: small-caps;
+  font-family: 'Neucha';
+}
+
+#username {
+  color: red;
 }
 
 #user-info {
   font-weight: bold;
   color: white;
+  font-family: sans-serif;
 }
 
 .team1-col {
@@ -36,4 +42,8 @@ h1 {
 
 .outer-container {
   /*background-color: gray;*/
+}
+
+.quote {
+  font-family: 'Satisfy'
 }

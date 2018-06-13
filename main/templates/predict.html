@@ -4,11 +4,18 @@
 
 {% block content %}
 
-<h1 class="text-center">{{ contest.name }}</h1>
+<div class="card bg-warning">
+  <h1 class="text-center">
+    {{ contest.tournament.name }} - 
+    <span id="tournament-name">{{ contest.name }}</span>'s Lounge
+  </h1>
+</div>
 
-<div class="col-12">
-  <div class="card bg-light">
-  <article class="card-body">
+<div class="card text-center">
+  <div class="card-header">
+    <h4>Group Stage</h4>
+  </div>
+  <div class="card-body">
     <form action="{% url 'predict' contest.name %}" method="post">
       {% csrf_token %}
       {% for game, bet in games_and_bets %}
@@ -31,7 +38,9 @@
         <button type="submit" class="btn btn-primary btn-block"> Submit </button>
       </div>
     </form>
-  </article>
+  </div>
+  <div class="card-footer text-muted quote">
+    The first principle is that you must not fool yourself and you are the easiest person to fool (R.F.)
   </div>
 </div>
 
