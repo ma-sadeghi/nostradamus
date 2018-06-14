@@ -7,13 +7,16 @@
 <h1 class="text-center">Active Competitions</h1>
 
 <div class="col-12">
-	<div class="card bg-light">
-	<article class="card-body mx-auto">
+<div class="card">
+  <div class="card-header">
+    Active Competitions
+  </div>
+  <ul class="list-group list-group-flush">
 		{% for contest in contests %}
-		<a href="{% url 'predict' contest.name %}"><li>{{ contest.name }}</li></a>
+		<li class="list-group-item"><a href="{% url 'predict' contest.name %}">{{ contest.name }}</a></li>
 		{% endfor %}
-	</article>
-	</div>
+  </ul>
+</div>
 </div>
 
 <div class="row">
@@ -37,7 +40,45 @@
 	           type="text">
 	  </div>
 	  <div class="form-group">
-	    <button type="submit" class="btn btn-primary btn-block"> Join Competition </button>
+	    <button type="submit" class="btn btn-primary btn-block"> Join </button>
+	  </div>
+	</form>
+	</article>
+	</div>
+</div>
+
+<div class="row">
+	<hr>
+</div>
+
+<h1 class="text-center">Create a Competition</h1>
+
+<div class="col-12 col-xs-12">
+	<div class="card bg-light">
+	<article class="card-body mx-auto">
+	<form action="#" method="post">
+	  {% csrf_token %}
+	  <div class="form-group">
+			<select class="custom-select">
+			  <option selected>Choose Tournament</option>
+			  <option value="1">FIFA World Cup 2018</option>
+			  <option value="2">EUFA Euro 2020</option>
+			  <option value="3">Random!!!</option>
+			</select>  	
+	  </div>
+	  <div class="form-group">
+		  <div class="form-group input-group">
+		    <div class="input-group-prepend">
+		      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+		    </div>
+		    <input name="contest-id"
+		           class="form-control"
+		           placeholder="Competition ID"
+		           type="text">
+		  </div>	
+	  </div>
+	  <div class="form-group">
+	    <button type="submit" class="btn btn-primary btn-block"> Create </button>
 	  </div>
 	</form>
 	</article>
