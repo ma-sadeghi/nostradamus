@@ -10,9 +10,9 @@
     <tr>
       <th class="text-center" scope="col">Rank</th>
       <th class="text-center" scope="col">Player</th>
-      <th class="text-center d-none d-lg-block" scope="col">Exact</th>
-      <th class="text-center d-none d-lg-block" scope="col">Goal</th>
-      <th class="text-center d-none d-lg-block" scope="col">Winner</th>
+      <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
+      <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
+      <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
       <th class="text-center" scope="col">Points</th>
     </tr>
   </thead>
@@ -21,9 +21,9 @@
     <tr>
       <th class="text-center" scope="row">{{ forloop.counter }}</th>
       <td class="text-center">{{ row.0 }}</td>
-      <td class="text-center d-none d-lg-block">{{ row.1 }}</td>
-      <td class="text-center d-none d-lg-block">{{ row.2 }}</td>
-      <td class="text-center d-none d-lg-block">{{ row.3 }}</td>
+      <td class="text-center d-lg-table-cell">{{ row.1 }}</td>
+      <td class="text-center d-lg-table-cell">{{ row.2 }}</td>
+      <td class="text-center d-lg-table-cell">{{ row.3 }}</td>
       <td class="text-center">{{ row.4 }}</td>
     </tr>
 {% endfor %}
