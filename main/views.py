@@ -83,7 +83,8 @@ class PredictView(View):
             bets_by_date.append(bets)
             games_and_bets_by_date.append((zip(games, bets), game.scheduled_datetime.date()))
         return render(request, 'predict.html', {'games_and_bets_by_date': games_and_bets_by_date,
-                                                'contest': contest})
+                                                'contest': contest,
+                                                'contests': request.user.contests.all()})
 
     def post(self, request, contest):
         req_dict = dict(request.POST.lists())
@@ -113,30 +114,6 @@ class PredictView(View):
         return HttpResponseRedirect('./')
 
 
-def place_bet(request):
-    if request.method == 'POST':
-        req_dict = dict(request.POST.lists())
-        home_score = req_dict['home_score']
-        away_score = req_dict['away_score']
-        games = Game.objects.all().order_by('scheduled_datetime')
-        user_bets = Bet.objects.filter(user=request.user)
-
-        for t1, t2, g in zip(home_score, away_score, games):
-            bet = Bet(user=request.user, game=g, home_score=t1, away_score=t2)
-            if t1 == '' or t2 == '':
-                continue
-            # new bet
-            if not user_bets.filter(game=g):
-                bet.save()
-            # update existing
-            else:
-                bet = user_bets.filter(game=g)
-                bet.update(home_score=t1)
-                bet.update(away_score=t2)
-
-    return HttpResponseRedirect('/standing/')
-
-
 @login_required
 def standing_home_view(request):
     contests = request.user.contests.all()
@@ -164,7 +141,8 @@ def show_standing(request, contest):
 
     rows = sorted(rows, key=lambda x:x[4], reverse=True)
     data = {'rows': rows,
-            'contest': contest.name}
+            'contest': contest.name,
+            'contests': request.user.contests.all()}
 
     return render(request, 'standing.html', data)
 
