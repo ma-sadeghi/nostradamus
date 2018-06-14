@@ -3,8 +3,16 @@
 
 {% block content %}
 
-<section class="container">
-<h1 class="text-center">{{ contest }} 's Standing</h1>
+<div class="card bg-warning mx-auto">
+  <h1 class="text-center"> 
+    <span id="contest-name">{{ contest }}</span>'s Lounge
+  </h1>
+</div>
+
+<div class="card text-center">
+  <div class="card-header">
+    <h4>Standing</h4>
+  </div>
 <table class="table table-hover">
   <thead>
     <tr>
@@ -21,14 +29,17 @@
     <tr>
       <th class="text-center" scope="row">{{ forloop.counter }}</th>
       <td class="text-center">{{ row.0 }}</td>
-      <td class="text-center d-lg-table-cell">{{ row.1 }}</td>
-      <td class="text-center d-lg-table-cell">{{ row.2 }}</td>
-      <td class="text-center d-lg-table-cell">{{ row.3 }}</td>
+      <td class="text-center d-none d-lg-table-cell">{{ row.1 }}</td>
+      <td class="text-center d-none d-lg-table-cell">{{ row.2 }}</td>
+      <td class="text-center d-none d-lg-table-cell">{{ row.3 }}</td>
       <td class="text-center">{{ row.4 }}</td>
     </tr>
 {% endfor %}
   </tbody>
 </table>
-</section>
+  <div class="card-footer text-muted quote">
+    A very great deal more truth can become known than can be proven. (R.F.)
+  </div>
+</div>
 
 {% endblock %}
