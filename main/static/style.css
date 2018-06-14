@@ -6,7 +6,7 @@ html, body{
 
 h1 {
   font-size: 30px;
-  /*margin: 25px auto 25px auto;*/
+  margin: 0px;
   font-variant: small-caps;
   font-family: 'Neucha';
 }
