@@ -81,12 +81,9 @@ class PredictView(View):
                 bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
                 bets.append(bet)
             bets_by_date.append(bets)
-            print(game.scheduled_datetime.date())
             games_and_bets_by_date.append((zip(games, bets), game.scheduled_datetime.date()))
         return render(request, 'predict.html', {'games_and_bets_by_date': games_and_bets_by_date,
                                                 'contest': contest})
-
-
 
     def post(self, request, contest):
         req_dict = dict(request.POST.lists())
@@ -97,6 +94,10 @@ class PredictView(View):
         games = contest.tournament.games.all().order_by('scheduled_datetime')
 
         for home_score, away_score, game in zip(home_scores, away_scores, games):
+
+            if utils.is_played(game): # no update if time passed
+                continue
+
             bet_query = request.user.bets.filter(game=game, contest=contest)
             old_bet = [bet_query[0].home_score, bet_query[0].away_score] if bet_query else ['','']
             if home_score != old_bet[0] or away_score != old_bet[1]:
