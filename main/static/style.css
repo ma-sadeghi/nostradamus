@@ -6,7 +6,7 @@ html, body{
 
 h1 {
   font-size: 30px;
-  margin: 0px;
+  padding-bottom: 25px;
   font-variant: small-caps;
   font-family: 'Neucha';
 }
@@ -16,17 +16,10 @@ h1 {
 }
 
 #user-info {
+  font-size: 16px;
   font-weight: bold;
   color: white;
-  font-family: sans-serif;
-}
-
-.team1-col {
-  text-align: right;
-}
-
-.team2-col {
-  text-align: left;
+  font-family: 'Oxygen';
 }
 
 .input-score-frame {
@@ -45,5 +38,9 @@ h1 {
 }
 
 .quote {
-  font-family: 'Satisfy'
+  font-family: 'Neucha'
+}
+
+.card {
+  font-family: 'Rajdhani', sans-serif;
 }
