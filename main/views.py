@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.views import View
+from itertools import groupby
 from . import forms
 from . import models
 from . import utils
@@ -69,13 +70,23 @@ class PredictView(View):
     def get(self, request, contest):
         contest = request.user.contests.filter(name=contest)[0]
         games = contest.tournament.games.all().order_by('scheduled_datetime')
+        games_by_date = [list(g) for t, g in groupby(games, key=utils.extract_date)]
+        bets_by_date = []
+        games_and_bets_by_date = []
         bets = []
-        for game in games:
-            bet = request.user.bets.filter(game=game, contest=contest)
-            bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
-            bets.append(bet)
-        return render(request, 'predict.html', {'games_and_bets': zip(games, bets),
+        for games in games_by_date:
+            bets = []
+            for game in games:
+                bet = request.user.bets.filter(game=game, contest=contest)
+                bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
+                bets.append(bet)
+            bets_by_date.append(bets)
+            print(game.scheduled_datetime.date())
+            games_and_bets_by_date.append((zip(games, bets), game.scheduled_datetime.date()))
+        return render(request, 'predict.html', {'games_and_bets_by_date': games_and_bets_by_date,
                                                 'contest': contest})
+
+
 
     def post(self, request, contest):
         req_dict = dict(request.POST.lists())

@@ -44,3 +44,7 @@ def is_played(game):
 
 class Object(object):
     pass
+
+def extract_date(game):
+    return game.scheduled_datetime.date()
+
