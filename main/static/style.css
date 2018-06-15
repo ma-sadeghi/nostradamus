@@ -1,14 +1,14 @@
 html, body{
   /*height: 100%;*/
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-family: 'Titillium Web', sans-serif;
+  min-width: 300px;
 }
 
 h1 {
-  font-size: 30px;
-  padding-bottom: 25px;
+  font-size: 26px;
   font-variant: small-caps;
-  font-family: 'Neucha';
 }
 
 #username {
@@ -19,7 +19,6 @@ h1 {
   font-size: 16px;
   font-weight: bold;
   color: white;
-  font-family: 'Oxygen';
 }
 
 .input-score-frame {
@@ -37,10 +36,11 @@ h1 {
   /*background-color: gray;*/
 }
 
-.quote {
-  font-family: 'Neucha'
-}
-
 .card {
   font-family: 'Rajdhani', sans-serif;
+  margin-bottom: 15px;
+}
+
+.table {
+  margin-bottom: 0px;
 }
