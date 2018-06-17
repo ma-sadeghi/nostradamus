@@ -18,18 +18,18 @@
       <div class="date">{{ date }}</div>
       {% for game, bet in games_and_bets %}
       <div class="row predict-row">
-      <div class="col text-right">{{ game.home }}</div>
-      <div class="col text-center score-frame">
+      <div class="col text-right team-home">{{ game.home }}</div>
+      <div class="text-center score-frame">
         <input type="number" name="home_score"
                value="{{ bet.0 }}"
                class="score"> 
       </div>
-      <div class="col text-center score-frame">
+      <div class="text-center score-frame">
         <input type="number" name="away_score"
                value="{{ bet.1 }}"
                class="score"> 
       </div>   
-      <div class="col text-left">{{ game.away }}</div>  
+      <div class="col text-left team-away">{{ game.away }}</div>  
       </div>
       {% endfor %}
       <hr>
