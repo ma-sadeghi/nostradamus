@@ -57,6 +57,7 @@ class Game(models.Model):
     away = models.ForeignKey(Team, related_name='%(class)s_away')
     home_score = models.IntegerField()
     away_score = models.IntegerField()
+    isplayoff = models.BooleanField(default=False)
     scheduled_datetime = models.DateTimeField()
 
     def __str__(self):
