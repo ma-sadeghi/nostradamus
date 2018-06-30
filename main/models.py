@@ -71,6 +71,9 @@ class Bet(models.Model):
     home_score = models.IntegerField()
     away_score = models.IntegerField()
 
+    class Meta:
+        unique_together = ("user", "game", "contest")
+
     def __str__(self):
         return self.user.username + ' : ' + str(self.contest) + ' : ' + str(self.game)
 
