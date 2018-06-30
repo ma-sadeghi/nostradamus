@@ -129,16 +129,21 @@ def show_standing(request, contest):
     rows = []
 
     for user in users:
-        se = utils.get_correct_predictions(user, contest, 'exact')
-        sg = utils.get_correct_predictions(user, contest, 'goal-difference')
-        sw = utils.get_correct_predictions(user, contest, 'winner-only')
+        exact_groupstage = utils.get_correct_predictions(user, contest, 'exact', 'groupstage')
+        goal_difference_groupstage = utils.get_correct_predictions(user, contest, 'goal-difference', 'groupstage')
+        winner_only_groupstage = utils.get_correct_predictions(user, contest, 'winner-only', 'groupstage')
+
+        exact_playoffs = utils.get_correct_predictions(user, contest, 'exact', 'playoffs')
+        goal_difference_playoffs = utils.get_correct_predictions(user, contest, 'goal-difference', 'playoffs')
+        winner_only_playoffs = utils.get_correct_predictions(user, contest, 'winner-only', 'playoffs')
 
         row = []
         row.append(user)
-        row.append(se)
-        row.append(sg)
-        row.append(sw)
-        row.append(se*3 + sg*2 + sw*1)
+        row.append(exact_groupstage + exact_playoffs)
+        row.append(goal_difference_groupstage + goal_difference_playoffs)
+        row.append(winner_only_groupstage + winner_only_playoffs)
+        row.append(exact_groupstage*3 + goal_difference_groupstage*2 + winner_only_groupstage*1 +
+                   exact_playoffs*6 + goal_difference_playoffs*4 + winner_only_playoffs*2)
         rows.append(row)
 
     rows = sorted(rows, key=lambda x:x[4], reverse=True)
