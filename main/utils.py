@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 
 
-def get_correct_predictions(user, contest, kind):
+def get_correct_predictions(user, contest, kind, round):
     bets = user.bets.filter(contest=contest)
     games = Game.objects.all()
 
@@ -16,6 +16,14 @@ def get_correct_predictions(user, contest, kind):
 
         if not is_played(game):
             continue
+        if round == 'groupstage':
+            if game.isplayoff:
+                continue
+        elif round == 'playoffs':
+            if not game.isplayoff:
+                continue
+        else:
+            raise Exception('Round can only be "groupstage" or "playoffs"')
 
         home_predicted = bet.home_score
         away_predicted = bet.away_score
