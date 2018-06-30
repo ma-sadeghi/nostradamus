@@ -11,6 +11,13 @@ h1 {
   font-variant: small-caps;
 }
 
+h5 {
+  font-size: 22px;
+  font-variant: small-caps;
+  margin: 0px;
+  padding: 0px;
+}
+
 #username {
   color: red;
 }
