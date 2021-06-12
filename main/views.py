@@ -72,8 +72,9 @@ class PredictView(View):
 
     def get(self, request, contest):
         contest = request.user.contests.filter(name=contest)[0]
-        # games = contest.tournament.games.all().order_by('scheduled_datetime')
-        games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
+        # Comment the next line and uncomment the line after, once group stage is completed!
+        games = contest.tournament.games.all().order_by('scheduled_datetime')
+        # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
         games_by_date = [list(g) for t, g in groupby(games, key=utils.extract_date)]
         bets_by_date = []
         games_and_bets_by_date = []
@@ -96,8 +97,9 @@ class PredictView(View):
         away_scores = req_dict['away_score']
 
         contest = request.user.contests.filter(name=contest)[0]
-        # games = contest.tournament.games.all().order_by('scheduled_datetime')
-        games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
+        # Comment the next line and uncomment the line after, once group stage is completed!
+        games = contest.tournament.games.all().order_by('scheduled_datetime')
+        # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
 
         for home_score, away_score, game in zip(home_scores, away_scores, games):
 
