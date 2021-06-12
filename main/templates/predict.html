@@ -44,8 +44,10 @@
   </div>
 </div>
 
-<script>
+<!-- The following script messes up with how I record predictions (they become off by the number of disabled rows)
+For instance, if you have 3 disabled rows, and you update a score, 3 rows above gets updates! -->
+<!-- <script>
   $('.played').prop('disabled', true)
-</script>
+</script> -->
 
 {% endblock %}
