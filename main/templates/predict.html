@@ -5,7 +5,7 @@
 {% block content %}
 
   <h1 class="text-center">
-    {{ contest.tournament.name }} - 
+    {{ contest.tournament.name }} -
     <span id="tournament-name">{{ contest.name }}</span>'s Lounge
   </h1>
 
@@ -27,9 +27,9 @@
       <div class="text-center score-frame">
         <input type="number" name="away_score"
                value="{{ bet.1 }}"
-               class="score {{ state }}"> 
-      </div>   
-      <div class="col text-left team-away">{{ game.away }}</div>  
+               class="score {{ state }}">
+      </div>
+      <div class="col text-left team-away">{{ game.away }}</div>
       </div>
       {% endfor %}
       <hr>
@@ -45,9 +45,13 @@
 </div>
 
 <!-- The following script messes up with how I record predictions (they become off by the number of disabled rows)
-For instance, if you have 3 disabled rows, and you update a score, 3 rows above gets updates! -->
-<!-- <script>
+For instance, if you have 3 disabled rows, and you update a score, 3 rows above gets updates!
+<script>
   $('.played').prop('disabled', true)
 </script> -->
+
+<script>
+  $('.played').parent().siblings().fadeTo("slow", 0.4)
+</script>
 
 {% endblock %}
