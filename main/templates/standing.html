@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1 class="text-center"> 
+<h1 class="text-center">
   <span id="contest-name">{{ contest }}</span>'s Lounge
 </h1>
 
@@ -38,4 +38,11 @@
   </div>
 </div>
 
+<script>
+  $("table tr").eq(1).css("background-color", "gold")
+  $("table tr").eq(2).css("background-color", "silver")
+  $("table tr").eq(3).css("background-color", "peru")
+</script>
+
 {% endblock %}
+
