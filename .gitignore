@@ -104,3 +104,6 @@ ENV/
 staticfiles
 .DS_Store
 .idea/
+
+# VS Code
+.vscode/*
