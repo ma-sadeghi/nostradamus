@@ -77,19 +77,24 @@ class PredictView(View):
         # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
         games_by_date = [list(g) for t, g in groupby(games, key=utils.extract_date)]
         bets_by_date = []
-        games_and_bets_by_date = []
+        games_and_bets_and_states_by_date = []
         bets = []
         for games in games_by_date:
             bets = []
+            states = []
             for game in games:
                 bet = request.user.bets.filter(game=game, contest=contest)
                 bet = [bet[0].home_score, bet[0].away_score] if bet else ['','']
                 bets.append(bet)
+                states.append('played' if utils.is_played(game) else 'not_played')
             bets_by_date.append(bets)
-            games_and_bets_by_date.append((zip(games, bets), game.scheduled_datetime.date()))
-        return render(request, 'predict.html', {'games_and_bets_by_date': games_and_bets_by_date,
-                                                'contest': contest,
-                                                'contests': request.user.contests.all()})
+            games_and_bets_and_states_by_date.append((zip(games, bets, states), game.scheduled_datetime.date()))
+        data = {
+            'games_and_bets_and_states_by_date': games_and_bets_and_states_by_date,
+            'contest': contest,
+            'contests': request.user.contests.all(),
+        }
+        return render(request, 'predict.html', data)
 
     def post(self, request, contest):
         req_dict = dict(request.POST.lists())
