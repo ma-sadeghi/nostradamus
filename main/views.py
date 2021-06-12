@@ -61,7 +61,10 @@ def logout_view(request):
 @login_required
 def home_view(request):
     contests = request.user.contests.all()
-    return render(request, 'home.html', {'contests': contests})
+    from .models import Tournament
+    tournaments = Tournament.objects.all()
+    data = {'contests': contests, 'tournaments': tournaments}
+    return render(request, 'home.html', data)
 
 
 # NOTE: name of the 2nd arg (contest) must match with 'contest' in home.html

@@ -59,9 +59,9 @@
 	  <div class="form-group">
 			<select class="custom-select">
 			  <option selected>Choose Tournament</option>
-			  <option value="1">FIFA World Cup 2018</option>
-			  <option value="2">EUFA Euro 2020</option>
-			  <option value="3">Random!!!</option>
+			  {% for tournament in tournaments %}
+			  <option value={{ forloop.counter0 }}>{{ tournament }}</option>
+			  {% endfor %}
 			</select>  	
 	  </div>
 	  <div class="form-group">
