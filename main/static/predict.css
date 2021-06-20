@@ -29,12 +29,28 @@
 }
 
 .predict-row {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a > div.predict-row:hover {
+  background-color:palegoldenrod;
+  border-radius: 10px;
+}
+
+a:link, a:visited, a:hover, a:active{
+  text-decoration: none;
+  color: black
+}
+a:hover {
+  color: blue;
+  font-weight: bold;
 }
 
 #contest-name {
-	color: blue;
+	color: teal;
 	font-weight: bold;
 	text-shadow: 2px;
 }

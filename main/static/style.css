@@ -9,6 +9,7 @@ html, body{
 h1 {
   font-size: 26px;
   font-variant: small-caps;
+  margin-bottom: 20px;
 }
 
 h5 {
@@ -50,4 +51,18 @@ h5 {
 
 .table {
   margin-bottom: 0px;
+}
+
+.equal-width-col-6 {
+  width: 50%;
+}
+
+.score {
+  font-family: monospace;
+}
+
+.card-message {
+  font-size: larger;
+  margin: 25px 0px;
+  font: small-c;
 }
