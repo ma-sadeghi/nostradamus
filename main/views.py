@@ -37,7 +37,7 @@ class SignupView(View):
 
 
 class LoginView(View):
-    
+
     def get(self, request):
         form = forms.LoginForm()
         return render(request, 'login.html', {'form': form})
@@ -175,3 +175,15 @@ def join_contest(request):
     if user not in contest.users.all():
         contest.users.add(user)
     return HttpResponseRedirect(reverse('predict', kwargs={'contest': contest.name}))
+
+
+@login_required
+def show_bets(request, contest_name, game_id):
+    contest = models.Contest.objects.get(name=contest_name)
+    game = models.Game.objects.get(id=game_id)
+    bets = models.Bet.objects.filter(contest=contest, game=game)
+    data={'bets': bets, 'game': game, 'contest': contest}
+    if utils.is_played(game):
+        return render(request, 'bets.html', data)
+    else:
+        return render(request, 'bets_hidden.html', data)
