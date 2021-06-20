@@ -179,10 +179,12 @@ def join_contest(request):
 
 @login_required
 def show_bets(request, contest_name, game_id):
+    contests = request.user.contests.all()
     contest = models.Contest.objects.get(name=contest_name)
     game = models.Game.objects.get(id=game_id)
     bets = models.Bet.objects.filter(contest=contest, game=game)
-    data={'bets': bets, 'game': game, 'contest': contest}
+    # We need to pass 'contests' for navbar to work (standings list)
+    data={'bets': bets, 'game': game, 'contest': contest, 'contests': contests}
     if utils.is_played(game):
         return render(request, 'bets.html', data)
     else:
