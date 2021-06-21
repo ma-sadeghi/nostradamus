@@ -4,7 +4,7 @@
 {% block content %}
 
 <h1 class="text-center">
-  <span id="contest-name">{{ contest }}</span>'s Lounge
+  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>'s Lounge
 </h1>
 
 <div class="card text-center">
@@ -13,7 +13,7 @@
   <thead>
     <tr>
       <th class="text-center" scope="col">Rank</th>
-      <th class="text-center" scope="col">Player</th>
+      <th class="text-left" scope="col">Player</th>
       <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
       <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
       <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
@@ -24,7 +24,7 @@
 {% for row in rows %}
     <tr>
       <th class="text-center" scope="row">{{ forloop.counter }}</th>
-      <td class="text-center">{{ row.0 }}</td>
+      <td class="text-left">{{ row.0 }}</td>
       <td class="text-center d-none d-lg-table-cell">{{ row.1 }}</td>
       <td class="text-center d-none d-lg-table-cell">{{ row.2 }}</td>
       <td class="text-center d-none d-lg-table-cell">{{ row.3 }}</td>
@@ -38,10 +38,21 @@
   </div>
 </div>
 
-<script>
+<!-- <script>
   $("table tr").eq(1).css("background-color", "gold")
-  $("table tr").eq(2).css("background-color", "silver")
+  $("table tr").eq(2).css("background-color", "lightgray")
   $("table tr").eq(3).css("background-color", "peru")
+</script> -->
+
+<script>
+  // Add border to 1st, 2nd, and 3rd place
+  $('table tr:eq(1)').addClass("first-place");
+  $('table tr:eq(2)').addClass("second-place");
+  $('table tr:eq(3)').addClass("third-place");
+// Add color-coded medal icon to 1st, 2nd, and 3rd place
+  $('table tr:eq(1) td:eq(0)').append(" <i class='fas fa-medal first-place'></i>");
+  $('table tr:eq(2) td:eq(0)').append(" <i class='fas fa-medal second-place'></i>");
+  $('table tr:eq(3) td:eq(0)').append(" <i class='fas fa-medal third-place'></i>");
 </script>
 
 {% endblock %}
