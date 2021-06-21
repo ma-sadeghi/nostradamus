@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Cardo&family=Major+Mono+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@300&display=swap');
+
 html, body{
   /*height: 100%;*/
   padding-top: 10px;
   padding-bottom: 10px;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: 'Changa', 'Cardo', serif;
   min-width: 300px;
 }
 
@@ -40,13 +43,17 @@ h5 {
   border-radius: 5px;
 }
 
-.outer-container {
-  /*background-color: gray;*/
-}
+/* .outer-container {
+  background-color: gray;
+} */
 
 .card {
-  font-family: 'Rajdhani', sans-serif;
+  /* font-family: 'Rajdhani', sans-serif; */
   margin-bottom: 15px;
+}
+
+.card-header {
+  border-color: black;
 }
 
 .table {
@@ -57,12 +64,56 @@ h5 {
   width: 50%;
 }
 
+.equal-width-col-4 {
+  width: 33.3%;
+}
+
 .score {
-  font-family: monospace;
+  font-family: 'Major Mono Display', monospace;
 }
 
 .card-message {
   font-size: larger;
   margin: 25px 0px;
   font: small-c;
+}
+
+.fas.fa-circle.exact {
+  color: limegreen;
+}
+.fas.fa-circle.goal-difference {
+  color: greenyellow;
+}
+.fas.fa-circle.winner-only {
+  color: palegreen;
+}
+.fas.fa-circle.zilch {
+  color: red;
+}
+
+.fas.fa-medal.first-place {
+  color: gold;
+  text-shadow: 1px 1px 3px black;
+}
+.fas.fa-medal.second-place {
+  color: silver;
+  text-shadow: 1px 1px 3px black;
+}
+.fas.fa-medal.third-place {
+  color: peru;
+  text-shadow: 1px 1px 3px black;
+}
+
+tr.first-place {
+  font-weight: bold;
+}
+tr.second-place {
+  font-weight: bold;
+}
+tr.third-place {
+  font-weight: bold;
+}
+
+div.card-footer.quote {
+  border-color: black;
 }

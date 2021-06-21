@@ -4,13 +4,13 @@
 {% block content %}
 
 <h1 class="text-center">
-  <span id="contest-name">{{ contest }}</span>'s Lounge
+  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>'s Lounge
 </h1>
 
 <div class="card text-center">
-  <h4 class="card-header">Predictions for <span class="font-weight-bold">{{ game.home }} vs. {{ game.away }}</span></h4>
+  <h4 class="card-header"><span class="font-weight-bold">{{ game.home }} - {{ game.away }}</span></h4>
 
-  <div class="card-message">This game hasn't been played yet, so you can't see others' predictions yet!</div>
+  <div class="card-message">This game hasn't been played, so you can't see others' predictions yet!</div>
 
   <div class="card-footer text-muted quote">
     A very great deal more truth can become known than can be proven. (R.F.)
