@@ -158,7 +158,7 @@ def show_standing(request, contest):
 
     rows = sorted(rows, key=lambda x:x[4], reverse=True)
     data = {'rows': rows,
-            'contest': contest.name,
+            'contest': contest,
             'contests': request.user.contests.all()}
 
     return render(request, 'standing.html', data)
@@ -183,8 +183,10 @@ def show_bets(request, contest_name, game_id):
     contest = models.Contest.objects.get(name=contest_name)
     game = models.Game.objects.get(id=game_id)
     bets = models.Bet.objects.filter(contest=contest, game=game)
+    results = [utils.evaluate_bet(bet) for bet in bets]
+    bets_and_results = list(zip(bets, results))
     # We need to pass 'contests' for navbar to work (standings list)
-    data={'bets': bets, 'game': game, 'contest': contest, 'contests': contests}
+    data={'bets_and_results': bets_and_results, 'game': game, 'contest': contest, 'contests': contests}
     if utils.is_played(game):
         return render(request, 'bets.html', data)
     else:
