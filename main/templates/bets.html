@@ -7,25 +7,50 @@
   {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>'s Lounge
 </h1>
 
-<div class="card text-center">
-<h4 class="card-header"><span class="font-weight-bold">{{ game.home }} vs. {{ game.away }}</span></h4>
+<div class="card text-left">
+<h4 class="card-header text-center">
+  ({{ game.home_score }})
+  <span class="font-weight-bold">{{ game.home }} - {{ game.away }}</span>
+  ({{ game.away_score }})
+</h4>
 <table class="table table-hover">
   <thead>
     <tr>
-      <th class="text-right equal-width-col-6" scope="col">Player</th>
-      <th class="text-left" scope="col">Prediction</th>
+      <th class="text-left equal-width-col-4" scope="col">Player</th>
+      <th class="text-left equal-width-col-4" scope="col">Prediction</th>
+      <th class="text-left equal-width-col-4" scope="col">Score</th>
     </tr>
   </thead>
   <tbody>
-{% for bet in bets %}
+{% for bet, result in bets_and_results %}
     <tr>
-      <td class="text-right">{{ bet.user }}</td>
-      <td class="text-left score">{{ bet.home_score }} - {{ bet.away_score }}</td>
+      <td class="text-left">{{ bet.user }}</td>
+      <td class="text-left score">{{ bet.home_score }}-{{ bet.away_score }}</td>
+      {% if result == 'exact' %}
+      <td class="text-left">
+        <i class="fas fa-circle exact"></i>
+        <i class="fas fa-circle exact"></i>
+        <i class="fas fa-circle exact"></i>
+      </td>
+      {% elif result == 'goal-difference' %}
+      <td class="text-left">
+        <i class="fas fa-circle {{ result }}"></i>
+        <i class="fas fa-circle {{ result }}"></i>
+      </td>
+      {% elif result == 'winner-only' %}
+      <td class="text-left">
+        <i class="fas fa-circle {{ result }}"></i>
+      </td>
+      {% elif result == 'zilch' %}
+      <td class="text-left">
+        <i class="fas fa-circle {{ result }}"></i>
+      </td>
+      {% endif %}
     </tr>
 {% endfor %}
   </tbody>
 </table>
-  <div class="card-footer text-muted quote">
+  <div class="card-footer text-muted quote text-center">
     A very great deal more truth can become known than can be proven. (R.F.)
   </div>
 </div>
