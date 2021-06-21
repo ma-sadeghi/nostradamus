@@ -70,3 +70,9 @@ a:hover {
 .show-bets-icon:hover {
   background-color: orange;
 }
+
+div.team-home, div.team-away {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
