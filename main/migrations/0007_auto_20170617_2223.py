@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import datetime
+
 from django.db import migrations, models
 from django.utils.timezone import utc
 
@@ -10,13 +11,15 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0006_game_scheduled_datetime'),
+        ("main", "0006_game_scheduled_datetime"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='scheduled_datetime',
-            field=models.DateTimeField(default=datetime.datetime(2017, 6, 17, 22, 23, 48, 485515, tzinfo=utc)),
+            model_name="game",
+            name="scheduled_datetime",
+            field=models.DateTimeField(
+                default=datetime.datetime(2017, 6, 17, 22, 23, 48, 485515, tzinfo=utc)
+            ),
         ),
     ]

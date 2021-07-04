@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0025_merge_20180630_1240'),
+        ("main", "0025_merge_20180630_1240"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='team',
-            name='name',
+            model_name="team",
+            name="name",
             field=models.CharField(max_length=20, unique=True),
         ),
     ]

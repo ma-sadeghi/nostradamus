@@ -10,12 +10,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('main', '0023_remove_team_flag'),
+        ("main", "0023_remove_team_flag"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='bet',
-            unique_together=set([('user', 'game', 'contest')]),
+            name="bet",
+            unique_together=set([("user", "game", "contest")]),
         ),
     ]

@@ -1,6 +1,7 @@
-from .models import Bet, Game
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+
+from .models import Bet, Game
 
 
 def get_correct_predictions(user, contest, kind, round):
@@ -18,10 +19,10 @@ def get_correct_predictions(user, contest, kind, round):
         if not is_played(game):
             continue
 
-        if round == 'groupstage':
+        if round == "groupstage":
             if game.isplayoff:
                 continue
-        elif round == 'playoffs':
+        elif round == "playoffs":
             if not game.isplayoff:
                 continue
         else:
@@ -42,28 +43,32 @@ def get_correct_predictions(user, contest, kind, round):
         elif (home_predicted - away_predicted) * (home_actual - away_actual) > 0:
             num_winner_only_predictions += 1
 
-    if kind == 'exact':
+    if kind == "exact":
         return num_exact_predictions
-    elif kind == 'goal-difference':
+    elif kind == "goal-difference":
         return num_goal_dif_predictions
-    elif (kind == 'winner-only'):
+    elif kind == "winner-only":
         return num_winner_only_predictions
+
 
 def is_played(game):
     return True if now() > game.scheduled_datetime else False
 
+
 class Object(object):
     pass
+
 
 def extract_date(game):
     return game.scheduled_datetime.date()
 
+
 def evaluate_bet(bet):
     game = bet.game
     if (bet.home_score == game.home_score) and (bet.away_score == game.away_score):
-        return 'exact'
+        return "exact"
     if (bet.home_score - bet.away_score) == (game.home_score - game.away_score):
-        return 'goal-difference'
+        return "goal-difference"
     if (bet.home_score - bet.away_score) * (game.home_score - game.away_score) > 0:
-        return 'winner-only'
-    return 'zilch'
+        return "winner-only"
+    return "zilch"

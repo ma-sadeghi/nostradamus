@@ -8,19 +8,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0009_auto_20170617_2224'),
+        ("main", "0009_auto_20170617_2224"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='team1_shortname',
-            field=models.CharField(default='XXX', max_length=3),
+            model_name="game",
+            name="team1_shortname",
+            field=models.CharField(default="XXX", max_length=3),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='game',
-            name='team2_shortname',
+            model_name="game",
+            name="team2_shortname",
             field=models.CharField(default=1, max_length=3),
             preserve_default=False,
         ),

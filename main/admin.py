@@ -1,6 +1,8 @@
-from django.contrib import admin
 import inspect
-from .models import Profile, Tournament, Contest, Team, Bet, Game
+
+from django.contrib import admin
+
+from .models import Bet, Contest, Game, Profile, Team, Tournament
 
 admin.site.register(Profile)
 admin.site.register(Tournament)

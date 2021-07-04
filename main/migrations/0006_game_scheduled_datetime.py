@@ -3,19 +3,22 @@
 from __future__ import unicode_literals
 
 import datetime
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0005_auto_20170616_1554'),
+        ("main", "0005_auto_20170616_1554"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='scheduled_datetime',
-            field=models.DateTimeField(default=datetime.datetime(2017, 6, 17, 22, 21, 14, 463399)),
+            model_name="game",
+            name="scheduled_datetime",
+            field=models.DateTimeField(
+                default=datetime.datetime(2017, 6, 17, 22, 21, 14, 463399)
+            ),
         ),
     ]

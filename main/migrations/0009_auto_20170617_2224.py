@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0008_auto_20170617_2224'),
+        ("main", "0008_auto_20170617_2224"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='scheduled_datetime',
+            model_name="game",
+            name="scheduled_datetime",
             field=models.DateTimeField(),
         ),
     ]
