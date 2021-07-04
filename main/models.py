@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.cache import cache
 
 
 class Tournament(models.Model):
@@ -62,6 +63,12 @@ class Game(models.Model):
 
     def __str__(self):
         return self.tournament.name + ' : ' + self.home.abbreviation + ' vs. ' + self.away.abbreviation
+
+
+# So that every time a game is updated, the Standing view's cache is reset
+@receiver(post_save, sender=Game)
+def clear_cache(sender, **kwargs):
+    cache.clear()
 
 
 class Bet(models.Model):
