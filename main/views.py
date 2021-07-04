@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.views import View
+from django.views.decorators.cache import cache_page
 from itertools import groupby
 from . import forms
 from . import models
@@ -132,6 +133,7 @@ def standing_home_view(request):
     return render(request, 'standing_home.html', {'contests': contests})
 
 
+@cache_page(3600)  # Cache every 1 hours
 @login_required
 def show_standing(request, contest):
     contest = request.user.contests.filter(name=contest).all()[0]
