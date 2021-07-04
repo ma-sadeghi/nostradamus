@@ -9,13 +9,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0016_profile'),
+        ("main", "0016_profile"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contest',
-            name='users',
-            field=models.ManyToManyField(related_name='contests', to=settings.AUTH_USER_MODEL),
+            model_name="contest",
+            name="users",
+            field=models.ManyToManyField(
+                related_name="contests", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

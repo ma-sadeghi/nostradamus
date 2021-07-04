@@ -8,18 +8,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0004_auto_20170616_1514'),
+        ("main", "0004_auto_20170616_1514"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='bet',
-            old_name='game_id',
-            new_name='game',
+            model_name="bet",
+            old_name="game_id",
+            new_name="game",
         ),
         migrations.RenameField(
-            model_name='bet',
-            old_name='user_id',
-            new_name='user',
+            model_name="bet",
+            old_name="user_id",
+            new_name="user",
         ),
     ]

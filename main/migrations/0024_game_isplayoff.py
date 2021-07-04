@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0023_remove_team_flag'),
+        ("main", "0023_remove_team_flag"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='isplayoff',
+            model_name="game",
+            name="isplayoff",
             field=models.BooleanField(default=False),
         ),
     ]

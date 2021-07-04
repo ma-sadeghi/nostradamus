@@ -8,20 +8,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0001_initial'),
+        ("main", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bet',
-            name='team1_name',
+            model_name="bet",
+            name="team1_name",
             field=models.CharField(default=1, max_length=100),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='bet',
-            name='team2_name',
-            field=models.CharField(default='1', max_length=100),
+            model_name="bet",
+            name="team2_name",
+            field=models.CharField(default="1", max_length=100),
             preserve_default=False,
         ),
     ]
