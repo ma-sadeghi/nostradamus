@@ -133,7 +133,7 @@ def standing_home_view(request):
     return render(request, 'standing_home.html', {'contests': contests})
 
 
-@cache_page(3600)  # Cache every 1 hours
+@cache_page(7 * 24 * 3600)  # Reset cache every 1 week
 @login_required
 def show_standing(request, contest):
     contest = request.user.contests.filter(name=contest).all()[0]
