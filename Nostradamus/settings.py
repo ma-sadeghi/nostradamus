@@ -16,7 +16,7 @@ SECRET_KEY = "!4ejp&2yiztv8#h!d*wy5y%o$$s@kbt!ai#93p8r*@--48$^$7"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["www.lobby2021.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["www.lobby2024.info", "127.0.0.1", "aminsadeghi.pythonanywhere.com"]
 
 LOGIN_URL = "/accounts/login/"
 
