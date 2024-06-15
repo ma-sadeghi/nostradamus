@@ -3,6 +3,8 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from import_export import fields, resources
+from import_export.widgets import ForeignKeyWidget
 
 
 class Tournament(models.Model):
@@ -76,6 +78,64 @@ class Game(models.Model):
             + " vs. "
             + self.away.abbreviation
         )
+
+
+class GameResource(resources.ModelResource):
+    tournament = fields.Field(
+        column_name="tournament",
+        attribute="tournament",
+        widget=ForeignKeyWidget(Tournament, "name"),
+    )
+    home = fields.Field(
+        column_name="home_team_abbreviation",
+        attribute="home",
+        widget=ForeignKeyWidget(Team, "abbreviation"),
+    )
+    away = fields.Field(
+        column_name="away_team_abbreviation",
+        attribute="away",
+        widget=ForeignKeyWidget(Team, "abbreviation"),
+    )
+
+    class Meta:
+        model = Game
+        fields = (
+            "id",
+            "tournament",
+            "home",
+            "away",
+            "home_score",
+            "away_score",
+            "scheduled_datetime",
+            "isplayoff",
+        )
+        export_order = (
+            "id",
+            "tournament",
+            "home",
+            "away",
+            "home_score",
+            "away_score",
+            "scheduled_datetime",
+            "isplayoff",
+        )
+
+    def get_instance(self, instance_loader, row):
+        """
+        This method is used by django-import-export to find an instance from the database
+        that matches the row being imported. Modify this method based on how you would
+        identify a unique record.
+        """
+        # Find by tournament, home team, and away team
+        try:
+            tournament = Tournament.objects.get(name=row["tournament"])
+            home_team = Team.objects.get(abbreviation=row["home_team_abbreviation"])
+            away_team = Team.objects.get(abbreviation=row["away_team_abbreviation"])
+            return self.get_queryset().get(
+                tournament=tournament, home=home_team, away=away_team
+            )
+        except (Tournament.DoesNotExist, Team.DoesNotExist, Game.DoesNotExist):
+            return None
 
 
 # So that every time a game is updated, the Standing view's cache is reset
