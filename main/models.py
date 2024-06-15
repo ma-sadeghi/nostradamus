@@ -13,7 +13,7 @@ class Tournament(models.Model):
 
 
 class Contest(models.Model):
-    tournament = models.ForeignKey(Tournament)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
     users = models.ManyToManyField(User, related_name="contests")
 
@@ -54,9 +54,15 @@ class Team(models.Model):
 
 
 class Game(models.Model):
-    tournament = models.ForeignKey(Tournament, related_name="games")
-    home = models.ForeignKey(Team, related_name="%(class)s_home")
-    away = models.ForeignKey(Team, related_name="%(class)s_away")
+    tournament = models.ForeignKey(
+        Tournament, on_delete=models.CASCADE, related_name="games"
+    )
+    home = models.ForeignKey(
+        Team, on_delete=models.CASCADE, related_name="%(class)s_home"
+    )
+    away = models.ForeignKey(
+        Team, on_delete=models.CASCADE, related_name="%(class)s_away"
+    )
     home_score = models.IntegerField()
     away_score = models.IntegerField()
     isplayoff = models.BooleanField(default=False)
@@ -79,9 +85,9 @@ def clear_cache(sender, **kwargs):
 
 
 class Bet(models.Model):
-    user = models.ForeignKey(User, related_name="bets")
-    game = models.ForeignKey(Game, related_name="bets")
-    contest = models.ForeignKey(Contest, related_name="bets")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bets")
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="bets")
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="bets")
     home_score = models.IntegerField()
     away_score = models.IntegerField()
 

@@ -1,12 +1,9 @@
-from django.contrib.auth.models import User
 from django.utils.timezone import now
-
-from .models import Bet, Game
 
 
 def get_correct_predictions(user, contest, kind, round):
     bets = user.bets.filter(contest=contest)
-    games = Game.objects.all()
+    # games = Game.objects.all()
 
     num_exact_predictions = 0
     num_goal_dif_predictions = 0
