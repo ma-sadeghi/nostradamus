@@ -44,6 +44,8 @@ MIDDLEWARE = [
     "Nostradamus.middleware.AdminTimezoneMiddleware",
 ]
 
+AUTHENTICATION_BACKENDS = ["Nostradamus.backends.CaseInsensitiveModelBackend"]
+
 ROOT_URLCONF = "Nostradamus.urls"
 
 TEMPLATES = [
