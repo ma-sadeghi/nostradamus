@@ -2,8 +2,6 @@ from itertools import groupby
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -30,7 +28,7 @@ class SignupView(View):
             username = form.cleaned_data.get("email")
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
-            if user == None:
+            if user is None:
                 return HttpResponseRedirect("/home")
             login(request, user)
         return render(request, "signup.html", {"form": form})
@@ -47,7 +45,7 @@ class LoginView(View):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
-            if user == None:
+            if user is None:
                 return HttpResponseRedirect(reverse("login"))
             login(request, user)
             return HttpResponseRedirect(reverse("home"))
@@ -109,7 +107,6 @@ class PredictView(View):
         # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
 
         for home_score, away_score, game in zip(home_scores, away_scores, games):
-
             if utils.is_played(game):  # no update if time passed
                 continue
 
