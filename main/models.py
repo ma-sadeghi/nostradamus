@@ -3,6 +3,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.dateparse import parse_datetime
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
 
@@ -120,22 +121,23 @@ class GameResource(resources.ModelResource):
             "isplayoff",
         )
 
-    def get_instance(self, instance_loader, row):
-        """
-        This method is used by django-import-export to find an instance from the database
-        that matches the row being imported. Modify this method based on how you would
-        identify a unique record.
-        """
-        # Find by tournament, home team, and away team
-        try:
-            tournament = Tournament.objects.get(name=row["tournament"])
-            home_team = Team.objects.get(abbreviation=row["home_team_abbreviation"])
-            away_team = Team.objects.get(abbreviation=row["away_team_abbreviation"])
-            return self.get_queryset().get(
-                tournament=tournament, home=home_team, away=away_team
-            )
-        except (Tournament.DoesNotExist, Team.DoesNotExist, Game.DoesNotExist):
-            return None
+
+def get_instance(self, instance_loader, row):
+    try:
+        tournament = Tournament.objects.get(name=row["tournament"])
+        home_team = Team.objects.get(abbreviation=row["home_team_abbreviation"])
+        away_team = Team.objects.get(abbreviation=row["away_team_abbreviation"])
+        scheduled_datetime = parse_datetime(
+            row["scheduled_datetime"]
+        )  # Make sure to parse the datetime correctly
+        return self.get_queryset().get(
+            tournament=tournament,
+            home=home_team,
+            away=away_team,
+            scheduled_datetime=scheduled_datetime,
+        )
+    except (Tournament.DoesNotExist, Team.DoesNotExist, Game.DoesNotExist):
+        return None
 
 
 # So that every time a game is updated, the Standing view's cache is reset
