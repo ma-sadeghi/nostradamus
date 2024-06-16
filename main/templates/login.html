@@ -9,35 +9,32 @@
 <h4 class="card-title mt-3 text-center">Sign in</h4>
 <form action="../login/" method="post">
   {% csrf_token %}
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-    </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
     <input name="username"
            class="form-control"
            placeholder="Username"
-           type="text">
-  </div> <!-- form-group// -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-    </div>
+           type="text" required>
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
     <input name="password"
            class="form-control"
            placeholder="Password"
-           type="password">
-  </div> <!-- form-group// -->
-  <div class="form-group">
+           type="password" required>
+  </div>
+  {% if error_message %}
+    <div class="alert alert-danger">{{ error_message }}</div>
+  {% endif %}
+  <div class="form-group text-center">
     <button type="submit" class="btn btn-primary btn-block"> Sign in </button>
-  </div> <!-- form-group// -->      
-  <p class="text-center">
-    Don't have an account? <a href="{% url 'signup' %}"> Sign up </a>
-  </p>
+  </div>      
+  <div class="text-center p-2">
+    Don't have an account? <a href="{% url 'signup' %}" class="link-primary"> Sign up </a>
+  </div>
 </form>
 </article>
-</div> <!-- card.// -->
-</div> 
-<!--container end.//-->
+</div>
+</div>
 
 {% endblock %}
-
