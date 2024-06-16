@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Cardo&family=Major+Mono+Display&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Changa:wght@300&display=swap');
 
-html, body{
+html,
+body {
   /*height: 100%;*/
   padding-top: 10px;
   padding-bottom: 10px;
@@ -81,12 +82,15 @@ h5 {
 .fas.fa-circle.exact {
   color: limegreen;
 }
+
 .fas.fa-circle.goal-difference {
   color: greenyellow;
 }
+
 .fas.fa-circle.winner-only {
   color: palegreen;
 }
+
 .fas.fa-circle.zilch {
   color: red;
 }
@@ -95,10 +99,12 @@ h5 {
   color: gold;
   text-shadow: 1px 1px 3px black;
 }
+
 .fas.fa-medal.second-place {
   color: silver;
   text-shadow: 1px 1px 3px black;
 }
+
 .fas.fa-medal.third-place {
   color: peru;
   text-shadow: 1px 1px 3px black;
@@ -107,9 +113,11 @@ h5 {
 tr.first-place {
   font-weight: bold;
 }
+
 tr.second-place {
   font-weight: bold;
 }
+
 tr.third-place {
   font-weight: bold;
 }
