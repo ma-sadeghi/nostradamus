@@ -25,7 +25,7 @@ class SignupView(View):
         form = forms.SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get("email")
+            username = form.cleaned_data.get("username")
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
             if user is None:
