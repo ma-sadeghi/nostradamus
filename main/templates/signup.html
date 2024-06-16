@@ -3,85 +3,102 @@
 
 {% block content %}
 
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{field.name}} {{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
+<div class="container vertical-center">
+  <div class="card bg-light p-4 mx-auto" style="max-width: 800px;">
+    <article class="card-body" style="max-width: 650px;">
+      <h4 class="card-title mt-3 text-center">Create Account</h4>
+      <form class="row g-3 needs-validation" action="{% url 'signup' %}" method="post" novalidate>
+        {% csrf_token %}
+        <!-- First Name -->
+        <div class="col-md-6">
+          <label for="first_name" class="form-label">First name</label>
+          <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                 id="first_name" name="first_name" placeholder="First name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+          <div class="invalid-feedback">
+            {% for error in form.first_name.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
         </div>
-    {% endfor %}
-{% endif %}
-
-<div class="container vertical-center col-12">
-<div class="card bg-light" id="signup-form">
-<article class="card-body mx-auto">
-<h4 class="card-title mt-3 text-center">Create Account</h4>
-<!-- <p class="text-center">Get started with your free account</p> -->
-<form action="{% url 'signup' %}" method="post">
-  {% csrf_token %}
-  <!-- First Name -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-    </div>
-    <input name="first_name"
-           class="form-control"
-           placeholder="First name"
-           type="text">
+        <!-- Last Name -->
+        <div class="col-md-6">
+          <label for="last_name" class="form-label">Last name</label>
+          <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                 id="last_name" name="last_name" placeholder="Last name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+          <div class="invalid-feedback">
+            {% for error in form.last_name.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Username -->
+        <div class="col-md-4">
+          <label for="username" class="form-label">Username</label>
+          <div class="input-group has-validation">
+            <span class="input-group-text">@</span>
+            <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                   id="username" name="username" placeholder="Username" aria-describedby="inputGroupPrepend" value="{{ form.username.value|default_if_none:'' }}" required>
+            <div class="invalid-feedback">
+              {% for error in form.username.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <!-- Password -->
+        <div class="col-md-4">
+          <label for="password1" class="form-label">Password</label>
+          <input type="password" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                 id="password1" name="password1" placeholder="Create password" required>
+          <div class="invalid-feedback">
+            {% for error in form.password1.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Verify Password -->
+        <div class="col-md-4">
+          <label for="password2" class="form-label">Confirm Password</label>
+          <input type="password" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                 id="password2" name="password2" placeholder="Repeat password" required>
+          <div class="invalid-feedback">
+            {% for error in form.password2.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Submit Button -->
+        <div class="col-12 text-center pt-2">
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+        <div class="col-12 text-center">
+          <p class="mt-2">Have an account? <a href="{% url 'login' %}">Log In</a></p>
+        </div>
+      </form>
+    </article>
   </div>
-  <!-- Last Name -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-    </div>
-    <input name="last_name"
-           class="form-control"
-           placeholder="Last name"
-           type="text">
-  </div>
-  <!-- Username -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
-    </div>
-    <input name="username"
-           class="form-control"
-           placeholder="Username"
-           type="text">
-  </div>
-  <!-- Password -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-    </div>
-    <input name="password1"
-           class="form-control"
-           placeholder="Create password"
-           type="password">
-  </div>
-  <!-- Verify Password -->
-  <div class="form-group input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-    </div>
-    <input name="password2"
-           class="form-control"
-           placeholder="Repeat password"
-           type="password">
-  </div>
-  <div class="form-group">
-    <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
-  </div>
-  <p class="text-center">Have an account? <a href="../login">Log In</a> </p>
-</form>
-</article>
 </div>
-</div> 
+
+<script>
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (() => {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
 
 {% endblock %}
