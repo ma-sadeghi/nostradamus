@@ -47,7 +47,14 @@ class LoginView(View):
             password = form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
             if user is None:
-                return HttpResponseRedirect(reverse("login"))
+                return render(
+                    request,
+                    "login.html",
+                    {
+                        "form": form,
+                        "error_message": "Invalid username or password.",
+                    },
+                )
             login(request, user)
             return HttpResponseRedirect(reverse("home"))
 
