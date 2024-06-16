@@ -5,83 +5,124 @@
 {% block content %}
 
 <div class="row">
-<div class="col-lg-4 col-md-6">
-<h1 class="text-center">Active Competitions</h1>
+	<div class="col-lg-4 col-md-6 mb-4">
+		<h1 class="text-center">Competitions</h1>
+		<div class="card">
+			<div class="card-header">
+				Active Competitions
+			</div>
+			<ul class="list-group list-group-flush">
+				{% for contest in contests.active %}
+				<li class="list-group-item">
+					<a href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="card">
+			<div class="card-header">
+				Past Competitions
+			</div>
+			<ul class="list-group list-group-flush">
+				{% for contest in contests.past %}
+				<li class="list-group-item">
+					<a href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 
-<div class="col-12">
-<div class="card">
-  <div class="card-header">
-    Active Competitions
-  </div>
-  <ul class="list-group list-group-flush">
-		{% for contest in contests %}
-		<li class="list-group-item"><a href="{% url 'predict' contest.name %}">{{ contest.name }}</a></li>
-		{% endfor %}
-  </ul>
-</div>
-</div>
-</div>
+	<div class="col-lg-4 col-md-6 mb-4">
+		<h1 class="text-center">Join a Public Competition</h1>
+		<div class="card bg-light">
+			<article class="card-body p-4">
+				<!-- Success/Error Messages -->
+				{% if 'contest_not_found' in request.GET %}
+				<div class="alert alert-danger">
+					Competition not found. Please check the ID and try again.
+				</div>
+				{% elif 'joined_contest' in request.GET %}
+				<div class="alert alert-success">
+					Successfully joined the competition!
+				</div>
+				{% elif 'already_member' in request.GET %}
+				<div class="alert alert-info">
+					You are already a member of this competition.
+				</div>
+				{% endif %}
 
-<div class="col-lg-4 col-md-6">
-<h1 class="text-center">Join a Public Competition</h1>
+				<form action="{% url 'join_contest' %}" method="post" class="needs-validation" novalidate>
+					{% csrf_token %}
+					<div class="mb-3">
+						<label for="contest-id" class="form-label">Competition ID</label>
+						<input name="contest-id" id="contest-id" class="form-control" placeholder="Competition ID"
+							type="text" required>
+						<div class="invalid-feedback">
+							Please enter a competition ID.
+						</div>
+					</div>
+					<div class="d-grid">
+						<button type="submit" class="btn btn-primary">Join</button>
+					</div>
+				</form>
+			</article>
+		</div>
+	</div>
 
-<div class="col-12 col-xs-12">
-	<div class="card bg-light">
-	<article class="card-body mx-auto">
-	<form action="{% url 'join_contest' %}" method="post">
-	  {% csrf_token %}
-	  <div class="form-group input-group">
-	    <div class="input-group-prepend">
-	      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-	    </div>
-	    <input name="contest-id"
-	           class="form-control"
-	           placeholder="Competition ID"
-	           type="text">
-	  </div>
-	  <div class="form-group">
-	    <button type="submit" class="btn btn-primary btn-block"> Join </button>
-	  </div>
-	</form>
-	</article>
+
+	<div class="col-lg-4 col-md-6 mb-4">
+		<h1 class="text-center">Create a Competition</h1>
+		<div class="card bg-light">
+			<article class="card-body p-4">
+				<form action="#" method="post" class="needs-validation" novalidate>
+					{% csrf_token %}
+					<div class="mb-3">
+						<label for="tournament" class="form-label">Choose Tournament</label>
+						<select id="tournament" class="form-select" required>
+							<option selected disabled value="">Choose...</option>
+							{% for tournament in tournaments %}
+							<option value="{{ forloop.counter0 }}">{{ tournament }}</option>
+							{% endfor %}
+						</select>
+						<div class="invalid-feedback">
+							Please select a tournament.
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="new-contest-id" class="form-label">Competition ID</label>
+						<input name="contest-id" id="new-contest-id" class="form-control" placeholder="Competition ID"
+							type="text" required>
+						<div class="invalid-feedback">
+							Please enter a competition ID.
+						</div>
+					</div>
+					<div class="d-grid">
+						<button type="submit" disabled class="btn btn-primary">Not Yet Implemented</button>
+					</div>
+				</form>
+			</article>
+		</div>
 	</div>
 </div>
-</div>
 
-<div class="col-lg-4 col-md-6">
-<h1 class="text-center">Create a Competition</h1>
+<script>
+	(() => {
+		'use strict'
 
-<div class="col-12 col-xs-12">
-	<div class="card bg-light">
-	<article class="card-body mx-auto">
-	<form action="#" method="post">
-	  {% csrf_token %}
-	  <div class="form-group">
-			<select class="custom-select">
-			  <option selected>Choose Tournament</option>
-			  {% for tournament in tournaments %}
-			  <option value={{ forloop.counter0 }}>{{ tournament }}</option>
-			  {% endfor %}
-			</select>  	
-	  </div>
-	  <div class="form-group">
-		  <div class="form-group input-group">
-		    <div class="input-group-prepend">
-		      <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-		    </div>
-		    <input name="contest-id"
-		           class="form-control"
-		           placeholder="Competition ID"
-		           type="text">
-		  </div>	
-	  </div>
-	  <div class="form-group">
-	    <button type="submit" disabled class="btn btn-primary btn-block"> Not Yet Implemented </button>
-	  </div>
-	</form>
-	</article>
-	</div>
-</div>
-</div>
-</div>
+		const forms = document.querySelectorAll('.needs-validation')
+
+		Array.from(forms).forEach(form => {
+			form.addEventListener('submit', event => {
+				if (!form.checkValidity()) {
+					event.preventDefault()
+					event.stopPropagation()
+				}
+
+				form.classList.add('was-validated')
+			}, false)
+		})
+	})()
+</script>
+
 {% endblock %}

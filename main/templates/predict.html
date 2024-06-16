@@ -4,40 +4,40 @@
 
 {% block content %}
 
-  <h1 class="text-center">
-    {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>'s Lounge
-  </h1>
+<h1 class="text-center my-4">
+  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>'s Lounge
+</h1>
 
 <div class="card text-center">
   <h4 class="card-header">Group Stage</h4>
   <div class="card-body">
-    <form action="{% url 'predict' contest.name %}" method="post">
+    <form action="{% url 'predict' contest.name %}" method="post" class="needs-validation" novalidate>
       {% csrf_token %}
       {% for games_and_bets_and_states, date in games_and_bets_and_states_by_date %}
-      <div class="date">{{ date }}</div>
+      <div class="date my-3">{{ date }}</div>
       {% for game, bet, state in games_and_bets_and_states %}
-      <div class="row predict-row justify-content-md-center">
-      <div class="col text-right team-home">{{ game.home }}</div>
-      <div class="text-center score-frame">
-        <input type="number" name="home_score"
-               value="{{ bet.0 }}"
-               class="score {{ state }}">
-      </div>
-      <div>
-        <a href="{% url 'show_bets' contest_name=contest.name game_id=game.id%}"><i class="fas fa-binoculars show-bets-icon"></i></a>
-      </div>
-      <div class="text-center score-frame">
-        <input type="number" name="away_score"
-               value="{{ bet.1 }}"
-               class="score {{ state }}">
-      </div>
-      <div class="col text-left team-away">{{ game.away }}</div>
+      <div class="row predict-row" style="--bs-columns: 10">
+        <div class="col team-home text-end">{{ game.home }}</div>
+        <div class="col-1 score-frame">
+          <input type="number" name="home_score" value="{{ bet.0 }}" class="form-control score {{ state }}"
+                 {% if state == 'played' %}disabled{% endif %}>
+        </div>
+        <div class="col-1 binoculars">
+          <a href="{% url 'show_bets' contest_name=contest.name game_id=game.id %}">
+            <i class="fas fa-binoculars show-bets-icon"></i>
+          </a>
+        </div>
+        <div class="col-1 score-frame">
+          <input type="number" name="away_score" value="{{ bet.1 }}" class="form-control score {{ state }}"
+                 {% if state == 'played' %}disabled{% endif %}>
+        </div>
+        <div class="col text-start team-away">{{ game.away }}</div>
       </div>
       {% endfor %}
       <hr>
       {% endfor %}
-      <div class="col-md-4 col-8 mx-auto">
-        <button type="submit" class="btn btn-primary btn-block custom-submit-button"> Save </button>
+      <div class="col-md-2 col-8 mx-auto">
+        <button type="submit" class="btn btn-primary w-100 custom-submit-button">Save</button>
       </div>
     </form>
   </div>
@@ -46,14 +46,15 @@
   </div>
 </div>
 
-<!-- The following script messes up with how I record predictions (they become off by the number of disabled rows)
-For instance, if you have 3 disabled rows, and you update a score, 3 rows above gets updates!
 <script>
-  $('.played').prop('disabled', true)
-</script> -->
-
-<script>
-  $('.played').parent().siblings().fadeTo("slow", 0.4)
+  // Disable and fade out rows that have already been played
+  document.addEventListener("DOMContentLoaded", function() {
+    const playedInputs = document.querySelectorAll('.played');
+    playedInputs.forEach(input => {
+      input.disabled = true;
+      input.closest('.predict-row').style.opacity = '0.4';
+    });
+  });
 </script>
 
 {% endblock %}
