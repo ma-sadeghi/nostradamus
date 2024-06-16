@@ -1,9 +1,10 @@
+import datetime
 from django.utils.timezone import now
 
 
 def get_correct_predictions(user, contest, kind, round):
+    """Returns the number of correct predictions for a user in a contest."""
     bets = user.bets.filter(contest=contest)
-    # games = Game.objects.all()
 
     num_exact_predictions = 0
     num_goal_dif_predictions = 0
@@ -49,18 +50,17 @@ def get_correct_predictions(user, contest, kind, round):
 
 
 def is_played(game):
+    """Returns True if a game has been played."""
     return True if now() > game.scheduled_datetime else False
 
 
-class Object(object):
-    pass
-
-
 def extract_date(game):
+    """Returns the date of a game."""
     return game.scheduled_datetime.date()
 
 
 def evaluate_bet(bet):
+    """Returns the type of correct prediction for a bet."""
     game = bet.game
     if (bet.home_score == game.home_score) and (bet.away_score == game.away_score):
         return "exact"
@@ -69,3 +69,18 @@ def evaluate_bet(bet):
     if (bet.home_score - bet.away_score) * (game.home_score - game.away_score) > 0:
         return "winner-only"
     return "zilch"
+
+
+def get_contests(user):
+    """Returns a dictionary of active and past contests for a user."""
+    contests = {"active": [], "past": []}
+    for contest_ in user.contests.all():
+        latest_game_date = contest_.tournament.games.latest(
+            "scheduled_datetime"
+        ).scheduled_datetime.date()
+        if datetime.date.today() - latest_game_date > datetime.timedelta(days=7):
+            contests["past"].append(contest_)
+        else:
+            contests["active"].append(contest_)
+    contests["all"] = contests["active"] + contests["past"]
+    return contests
