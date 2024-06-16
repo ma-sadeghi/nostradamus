@@ -57,7 +57,7 @@
                 Standing
               </a>
               <ul class="dropdown-menu" aria-labelledby="dropdown01">
-                {% for contest in contests %}
+                {% for contest in contests.all %}
                 <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
                 {% endfor %}
               </ul>
