@@ -31,6 +31,7 @@ class SignupView(View):
             if user is None:
                 return HttpResponseRedirect("/home")
             login(request, user)
+            return HttpResponseRedirect(reverse("home"))
         return render(request, "signup.html", {"form": form})
 
 
