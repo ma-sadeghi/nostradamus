@@ -57,7 +57,14 @@
                 Standing
               </a>
               <ul class="dropdown-menu" aria-labelledby="dropdown01">
-                {% for contest in contests.all %}
+                <div class="text-primary" style="padding-left: 5px">Active</div>
+                <hr style="margin: 0px; padding: 0px;">
+                {% for contest in contests.active %}
+                <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
+                {% endfor %}
+                <div class="text-primary" style="padding-left: 5px">Past</div>
+                <hr style="margin: 0px; padding: 0px;">
+                {% for contest in contests.past %}
                 <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
                 {% endfor %}
               </ul>
