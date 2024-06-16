@@ -3,74 +3,96 @@
 <!DOCTYPE html>
 <html>
 
-<!-- HTML head begins -->
 <head>
-    <title>Nostradamus</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nostradamus</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+  <!-- Load external fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js" integrity="sha384-u/bQvRA/1bobcXlcEYpsEdFVK/vJs3+T+nXLsBYJthmdBuavHvAW6UsmqO2Gd/F9" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <!-- Load external scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-    <link rel="stylesheet" href="{% static 'nav.css' %}">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'predict.css' %}">
-    <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}"/>
+  <!-- Load external stylesheets -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Load local stylesheets -->
+  <link rel="stylesheet" href="{% static 'nav.css' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="{% static 'predict.css' %}">
+  <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}" />
 </head>
 
 <body>
 
-<header>
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <a class="navbar-brand" href="{% url 'home' %}">Nostradamus</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Standing</a>
-          <div class="dropdown-menu" aria-labelledby="dropdown01">
-            {% for contest in contests %}
-            <a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a>
-            {% endfor %}
-          </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-        </li>
-      </ul>
-      <span class="d-none d-md-block badge badge-success" id="user-info">Welcome <span id="username">{{request.user.username}}</span>!</span>
-    </div>
-  </nav>
-</header>
+  <!-- Header begins -->
+  <header>
+    <nav class="navbar navbar-expand-md bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">Nostradamus</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
+            </li>
+            {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Standing
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdown01">
+                {% for contest in contests %}
+                <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+            {% endif %}
+          </ul>
+          {% if request.user.is_authenticated %}
+          <span class="d-none d-md-block badge bg-success" id="user-info">
+            Welcome <span id="username">{{ request.user.username }}</span>
+          </span>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
 
-<!-- Main content begins -->
-<div class="container outer-container">
-{% block content %}
-{% endblock %}
-</div>
-
-<!-- Footer begins -->
-<footer class="footer bg-dark">
-  <div class="container text-center">
-    <span class="text-muted" style="font-variant: small-caps;">
-      &copy; Copyright <script>document.write(new Date().getFullYear())</script> by Amin Sadeghi
-    </span>
+  <!-- Main content begins -->
+  <div class="container outer-container">
+    {% block content %}
+    {% endblock %}
   </div>
-</footer>
+
+  <!-- Footer begins -->
+  <footer class="footer bg-dark">
+    <div class="container text-center">
+      <span class="text-secondary">
+        &copy; Copyright
+        <script>document.write(new Date().getFullYear())</script> by Amin Sadeghi
+      </span>
+    </div>
+  </footer>
 
 </body>
+
 </html>
