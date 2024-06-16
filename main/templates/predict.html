@@ -19,8 +19,7 @@
       <div class="row predict-row" style="--bs-columns: 10">
         <div class="col team-home text-end">{{ game.home }}</div>
         <div class="col-1 score-frame">
-          <input type="number" name="home_score" value="{{ bet.0 }}" class="form-control score {{ state }}"
-                 {% if state == 'played' %}disabled{% endif %}>
+          <input type="number" name="home_score" value="{{ bet.0 }}" class="form-control score {{ state }}">
         </div>
         <div class="col-1 binoculars">
           <a href="{% url 'show_bets' contest_name=contest.name game_id=game.id %}">
@@ -28,8 +27,7 @@
           </a>
         </div>
         <div class="col-1 score-frame">
-          <input type="number" name="away_score" value="{{ bet.1 }}" class="form-control score {{ state }}"
-                 {% if state == 'played' %}disabled{% endif %}>
+          <input type="number" name="away_score" value="{{ bet.1 }}" class="form-control score {{ state }}">
         </div>
         <div class="col text-start team-away">{{ game.away }}</div>
       </div>
@@ -47,14 +45,17 @@
 </div>
 
 <script>
-  // Disable and fade out rows that have already been played
-  document.addEventListener("DOMContentLoaded", function() {
-    const playedInputs = document.querySelectorAll('.played');
-    playedInputs.forEach(input => {
-      input.disabled = true;
-      input.closest('.predict-row').style.opacity = '0.4';
-    });
-  });
+  // Disable and fade out rows that have already been played (DON'T DO, SCREWS UP THE FORM SUBMISSION)
+  // document.addEventListener("DOMContentLoaded", function() {
+  //   const playedInputs = document.querySelectorAll('.played');
+  //   playedInputs.forEach(input => {
+  //     input.disabled = true;
+  //     input.closest('.predict-row').style.opacity = '0.4';
+  //   });
+  // });
+  
+  // Fade out rows that have already been played
+  $('.played').parent().siblings().fadeTo("slow", 0.4)
 </script>
 
 {% endblock %}
