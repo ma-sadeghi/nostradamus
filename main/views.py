@@ -3,12 +3,13 @@ from itertools import groupby
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 from django.views.decorators.cache import cache_page
 
 from . import forms, models, utils
+from .models import Tournament
 
 
 @login_required
@@ -66,9 +67,7 @@ def logout_view(request):
 
 @login_required
 def home_view(request):
-    contests = request.user.contests.all()
-    from .models import Tournament
-
+    contests = utils.get_contests(request.user)
     tournaments = Tournament.objects.all()
     data = {"contests": contests, "tournaments": tournaments}
     return render(request, "home.html", data)
@@ -100,7 +99,7 @@ class PredictView(View):
         data = {
             "games_and_bets_and_states_by_date": games_and_bets_and_states_by_date,
             "contest": contest,
-            "contests": request.user.contests.all(),
+            "contests": utils.get_contests(request.user),
         }
         return render(request, "predict.html", data)
 
@@ -201,11 +200,12 @@ def join_contest(request):
     contest_id = request.POST["contest-id"]
     contest = models.Contest.objects.filter(name=contest_id)
     if not contest:
-        return HttpResponseRedirect(reverse("home"))
+        return redirect(reverse("home") + "?contest_not_found=True")
     contest = contest[0]
     if user not in contest.users.all():
         contest.users.add(user)
-    return HttpResponseRedirect(reverse("predict", kwargs={"contest": contest.name}))
+        return redirect(reverse("home") + "?joined_contest=True")
+    return redirect(reverse("home") + "?already_member=True")
 
 
 @login_required
