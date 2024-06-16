@@ -12,7 +12,7 @@
 }
 
 .score-frame {
-  text-align: center;
+  width: 50px;
   padding-right: 5px;
   padding-left: 5px;
 }
@@ -23,13 +23,34 @@
 }
 
 .score {
-  max-width: 35px;
-  text-align: center;
+  width: 40px;
+  /* text-align: center; */
   border-radius: 5px;
 }
 
+.binoculars {
+  width: 50px;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 3px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .predict-row {
-  padding-top: 15px;
+  padding-top: 5px;
   padding-bottom: 5px;
   margin-left: auto;
   margin-right: auto;
@@ -76,4 +97,5 @@ div.team-away {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  padding-top: 4px;
 }
