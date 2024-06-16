@@ -1,4 +1,4 @@
-.custom-submit-button{
+.custom-submit-button {
   width: 150px;
   margin: auto;
 }
@@ -36,23 +36,23 @@
 }
 
 div.predict-row:hover {
-  background-color:palegoldenrod;
+  background-color: palegoldenrod;
   border-radius: 10px;
 }
 
-a:link, a:visited, a:hover, a:active{
+/* a:link, a:visited, a:hover, a:active{
   text-decoration: none;
   color: black
 }
 a:hover {
   color: blue;
   font-weight: bold;
-}
+} */
 
 #contest-name {
-	color: teal;
-	font-weight: bold;
-	text-shadow: 2px;
+  color: teal;
+  font-weight: bold;
+  text-shadow: 2px;
 }
 
 .date {
@@ -71,7 +71,8 @@ a:hover {
   background-color: orange;
 }
 
-div.team-home, div.team-away {
+div.team-home,
+div.team-away {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
