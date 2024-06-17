@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="row">
+<div class="row competitions">
 	<div class="col-lg-4 col-md-6 mb-4">
 		<h1 class="text-center">Competitions</h1>
 		<div class="card">
@@ -55,7 +55,7 @@
 				<form action="{% url 'join_contest' %}" method="post" class="needs-validation" novalidate>
 					{% csrf_token %}
 					<div class="mb-3">
-						<label for="contest-id" class="form-label">Competition ID</label>
+						<label for="contest-id" class="form-label">Enter Competition ID</label>
 						<input name="contest-id" id="contest-id" class="form-control" placeholder="Competition ID"
 							type="text" required>
 						<div class="invalid-feedback">
@@ -63,7 +63,7 @@
 						</div>
 					</div>
 					<div class="d-grid">
-						<button type="submit" class="btn btn-primary">Join</button>
+						<button type="submit" class="btn btn-primary mx-auto px-4">Join</button>
 					</div>
 				</form>
 			</article>
@@ -98,7 +98,7 @@
 						</div>
 					</div>
 					<div class="d-grid">
-						<button type="submit" disabled class="btn btn-primary">Not Yet Implemented</button>
+						<button type="submit" disabled class="btn btn-primary px-4 mx-auto">Coming Soon!</button>
 					</div>
 				</form>
 			</article>
