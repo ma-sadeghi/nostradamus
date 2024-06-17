@@ -152,44 +152,58 @@ def show_standing(request, contest):
     users = contest.users.all()
     rows = []
 
+    w_exact = 3
+    w_goal_diff = 2
+    w_winner_only = 1
+    playoffs_multiplier = 2
+
     for user in users:
         exact_groupstage = utils.get_correct_predictions(
             user, contest, "exact", "groupstage"
         )
-        goal_difference_groupstage = utils.get_correct_predictions(
+        goal_diff_groupstage = utils.get_correct_predictions(
             user, contest, "goal-difference", "groupstage"
         )
         winner_only_groupstage = utils.get_correct_predictions(
             user, contest, "winner-only", "groupstage"
         )
-
         exact_playoffs = utils.get_correct_predictions(
             user, contest, "exact", "playoffs"
         )
-        goal_difference_playoffs = utils.get_correct_predictions(
+        goal_diff_playoffs = utils.get_correct_predictions(
             user, contest, "goal-difference", "playoffs"
         )
         winner_only_playoffs = utils.get_correct_predictions(
             user, contest, "winner-only", "playoffs"
         )
-
-        row = []
-        row.append(user)
-        row.append(exact_groupstage + exact_playoffs)
-        row.append(goal_difference_groupstage + goal_difference_playoffs)
-        row.append(winner_only_groupstage + winner_only_playoffs)
-        row.append(
-            exact_groupstage * 3
-            + goal_difference_groupstage * 2
-            + winner_only_groupstage * 1
-            + exact_playoffs * 6
-            + goal_difference_playoffs * 4
-            + winner_only_playoffs * 2
+        points_groupstage = (
+            exact_groupstage * w_exact
+            + goal_diff_groupstage * w_goal_diff
+            + winner_only_groupstage * w_winner_only
         )
-        rows.append(row)
+        points_playoffs = (
+            exact_playoffs * w_exact
+            + goal_diff_playoffs * w_goal_diff
+            + winner_only_playoffs * w_winner_only
+        ) * playoffs_multiplier
 
-    rows = sorted(rows, key=lambda x: x[4], reverse=True)
-    data = {"rows": rows, "contest": contest, "contests": request.user.contests.all()}
+        rows.append(
+            {
+                "user": user,
+                "predictions_exact": exact_groupstage + exact_playoffs,
+                "predictions_goal_diff": goal_diff_groupstage + goal_diff_playoffs,
+                "predictions_winner_only": winner_only_groupstage
+                + winner_only_playoffs,
+                "points": points_groupstage + points_playoffs,
+            }
+        )
+
+    rows = sorted(rows, key=lambda x: x["points"], reverse=True)
+    data = {
+        "rows": rows,
+        "contest": contest,
+        "contests": utils.get_contests(request.user),
+    }
 
     return render(request, "standing.html", data)
 
