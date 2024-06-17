@@ -12,5 +12,7 @@ if path not in sys.path:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Nostradamus.settings'
 
 # then:
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+# from django.core.wsgi import get_wsgi_application
+# application = get_wsgi_application()
+
+from Nostradamus.wsgi import application
