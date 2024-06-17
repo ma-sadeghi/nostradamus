@@ -62,7 +62,7 @@
                 {% for contest in contests.active %}
                 <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
                 {% endfor %}
-                <div class="text-primary" style="padding-left: 5px">Past</div>
+                <div class="text-primary pt-1" style="padding-left: 5px">Past</div>
                 <hr style="margin: 0px; padding: 0px;">
                 {% for contest in contests.past %}
                 <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
