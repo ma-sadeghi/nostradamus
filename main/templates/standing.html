@@ -13,7 +13,7 @@
     <thead>
       <tr>
         <th class="text-center" scope="col">Rank</th>
-        <th class="text-left" scope="col">Player</th>
+        <th class="text-start" scope="col">Player</th>
         <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
         <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
         <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
@@ -24,7 +24,7 @@
       {% for row in rows %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
-        <td class="text-left">{{ row.user }}</td>
+        <td class="text-start">{{ row.user }}</td>
         <td class="text-center d-none d-lg-table-cell">{{ row.predictions_exact }}</td>
         <td class="text-center d-none d-lg-table-cell">{{ row.predictions_goal_diff }}</td>
         <td class="text-center d-none d-lg-table-cell">{{ row.predictions_winner_only }}</td>
