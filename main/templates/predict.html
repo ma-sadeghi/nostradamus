@@ -44,18 +44,6 @@
   </div>
 </div>
 
-<script>
-  // Disable and fade out rows that have already been played (DON'T DO, SCREWS UP THE FORM SUBMISSION)
-  // document.addEventListener("DOMContentLoaded", function() {
-  //   const playedInputs = document.querySelectorAll('.played');
-  //   playedInputs.forEach(input => {
-  //     input.disabled = true;
-  //     input.closest('.predict-row').style.opacity = '0.4';
-  //   });
-  // });
-  
-  // Fade out rows that have already been played
-  $('.played').parent().siblings().fadeTo("slow", 0.4)
-</script>
+<script src="{% static 'predict.js' %}"></script>
 
 {% endblock %}
