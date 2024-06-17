@@ -8,31 +8,31 @@
 </h1>
 
 <div class="card text-center">
-<h4 class="card-header">Standing</h4>
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th class="text-center" scope="col">Rank</th>
-      <th class="text-left" scope="col">Player</th>
-      <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
-      <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
-      <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
-      <th class="text-center" scope="col">Points</th>
-    </tr>
-  </thead>
-  <tbody>
-{% for row in rows %}
-    <tr>
-      <th class="text-center" scope="row">{{ forloop.counter }}</th>
-      <td class="text-left">{{ row.0 }}</td>
-      <td class="text-center d-none d-lg-table-cell">{{ row.1 }}</td>
-      <td class="text-center d-none d-lg-table-cell">{{ row.2 }}</td>
-      <td class="text-center d-none d-lg-table-cell">{{ row.3 }}</td>
-      <td class="text-center">{{ row.4 }}</td>
-    </tr>
-{% endfor %}
-  </tbody>
-</table>
+  <h4 class="card-header">Standing</h4>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th class="text-center" scope="col">Rank</th>
+        <th class="text-left" scope="col">Player</th>
+        <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
+        <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
+        <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
+        <th class="text-center" scope="col">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <th class="text-center" scope="row">{{ forloop.counter }}</th>
+        <td class="text-left">{{ row.user }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_exact }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_goal_diff }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_winner_only }}</td>
+        <td class="text-center">{{ row.points }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   <div class="card-footer text-muted quote">
     A very great deal more truth can become known than can be proven. (R.F.)
   </div>
@@ -49,11 +49,10 @@
   $('table tr:eq(1)').addClass("first-place");
   $('table tr:eq(2)').addClass("second-place");
   $('table tr:eq(3)').addClass("third-place");
-// Add color-coded medal icon to 1st, 2nd, and 3rd place
+  // Add color-coded medal icon to 1st, 2nd, and 3rd place
   $('table tr:eq(1) td:eq(0)').append(" <i class='fas fa-medal first-place'></i>");
   $('table tr:eq(2) td:eq(0)').append(" <i class='fas fa-medal second-place'></i>");
   $('table tr:eq(3) td:eq(0)').append(" <i class='fas fa-medal third-place'></i>");
 </script>
 
 {% endblock %}
-
