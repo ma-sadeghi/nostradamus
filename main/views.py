@@ -141,7 +141,7 @@ class PredictView(View):
 
 @login_required
 def standing_home_view(request):
-    contests = request.user.contests.all()
+    contests = utils.get_contests(request.user)
     return render(request, "standing_home.html", {"contests": contests})
 
 
@@ -210,7 +210,7 @@ def join_contest(request):
 
 @login_required
 def show_bets(request, contest_name, game_id):
-    contests = request.user.contests.all()
+    contests = utils.get_contests(request.user)
     contest = models.Contest.objects.get(name=contest_name)
     game = models.Game.objects.get(id=game_id)
     bets = models.Bet.objects.filter(contest=contest, game=game)
