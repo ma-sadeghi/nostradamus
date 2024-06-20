@@ -71,11 +71,11 @@ h1 {
   color: limegreen;
 }
 
-.fas.fa-circle.goal-difference {
+.fas.fa-circle.goal-diff {
   color: greenyellow;
 }
 
-.fas.fa-circle.winner-only {
+.fas.fa-circle.winner {
   color: palegreen;
 }
 
@@ -120,7 +120,13 @@ div.card-footer.quote {
 
 /* Bootstrap's XL breakpoint is too wide! */
 @media (min-width: 1400px) {
-  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
-      max-width: 1140px;
+
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xl,
+  .container-xxl {
+    max-width: 1140px;
   }
 }
