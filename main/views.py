@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from itertools import groupby
 
 from django.contrib.auth import authenticate, login, logout
@@ -145,6 +146,15 @@ def standing_home_view(request):
     return render(request, "standing_home.html", {"contests": contests})
 
 
+def count_points(preds: Mapping[str, int], w_exact: int, w_goal_diff: int, w_winner: int):
+    """Returns the total points for a set of predictions."""
+    return (
+        preds["exact"] * w_exact
+        + preds["goal-diff"] * w_goal_diff
+        + preds["winner"] * w_winner
+    )
+
+
 # @cache_page(24 * 3600)  # Reset cache every 1 week
 @login_required
 def show_standing(request, contest):
@@ -154,49 +164,24 @@ def show_standing(request, contest):
 
     w_exact = 3
     w_goal_diff = 2
-    w_winner_only = 1
+    w_winner = 1
     playoffs_multiplier = 2
 
     for user in users:
-        exact_groupstage = utils.get_correct_predictions(
-            user, contest, "exact", "groupstage"
-        )
-        goal_diff_groupstage = utils.get_correct_predictions(
-            user, contest, "goal-difference", "groupstage"
-        )
-        winner_only_groupstage = utils.get_correct_predictions(
-            user, contest, "winner-only", "groupstage"
-        )
-        exact_playoffs = utils.get_correct_predictions(
-            user, contest, "exact", "playoffs"
-        )
-        goal_diff_playoffs = utils.get_correct_predictions(
-            user, contest, "goal-difference", "playoffs"
-        )
-        winner_only_playoffs = utils.get_correct_predictions(
-            user, contest, "winner-only", "playoffs"
-        )
-        points_groupstage = (
-            exact_groupstage * w_exact
-            + goal_diff_groupstage * w_goal_diff
-            + winner_only_groupstage * w_winner_only
-        )
-        points_playoffs = (
-            exact_playoffs * w_exact
-            + goal_diff_playoffs * w_goal_diff
-            + winner_only_playoffs * w_winner_only
-        ) * playoffs_multiplier
-
-        rows.append(
-            {
-                "user": user,
-                "predictions_exact": exact_groupstage + exact_playoffs,
-                "predictions_goal_diff": goal_diff_groupstage + goal_diff_playoffs,
-                "predictions_winner_only": winner_only_groupstage
-                + winner_only_playoffs,
-                "points": points_groupstage + points_playoffs,
-            }
-        )
+        preds = utils.get_correct_predictions(user, contest)
+        preds_exact = preds["groupstage"]["exact"] + preds["playoffs"]["exact"]
+        preds_goal_diff = preds["groupstage"]["goal-diff"] + preds["playoffs"]["goal-diff"]
+        preds_winner = preds["groupstage"]["winner"] + preds["playoffs"]["winner"]
+        points_groupstage = count_points(preds["groupstage"], w_exact, w_goal_diff, w_winner)
+        points_playoffs = count_points(preds["playoffs"], w_exact, w_goal_diff, w_winner)
+        row = {
+            "user": user,
+            "preds_exact": preds_exact,
+            "preds_goal_diff": preds_goal_diff,
+            "preds_winner": preds_winner,
+            "points": points_groupstage + points_playoffs * playoffs_multiplier,
+        }
+        rows.append(row)
 
     rows = sorted(rows, key=lambda x: x["points"], reverse=True)
     data = {
