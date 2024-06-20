@@ -25,9 +25,9 @@
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
         <td class="text-start">{{ row.user }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_exact }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_goal_diff }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.predictions_winner_only }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.preds_exact }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.preds_goal_diff }}</td>
+        <td class="text-center d-none d-lg-table-cell">{{ row.preds_winner }}</td>
         <td class="text-center">{{ row.points }}</td>
       </tr>
       {% endfor %}
