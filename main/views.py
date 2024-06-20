@@ -241,3 +241,7 @@ def show_bets(request, contest_name, game_id):
         return render(request, "bets.html", data)
     else:
         return render(request, "bets_hidden.html", data)
+
+
+def custom_404_view(request, exception):
+    return render(request, "404.html", status=404)
