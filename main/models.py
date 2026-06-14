@@ -10,6 +10,8 @@ from django.utils.timezone import now
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
 
+from . import avatars, flags
+
 
 class Tournament(models.Model):
     name = models.CharField(max_length=20)
@@ -36,6 +38,13 @@ class Profile(models.Model):
     # Set when an account is handed out with a temporary password; forces a
     # password change on the next login.
     must_change_password = models.BooleanField(default=False)
+    # Preset avatar key (see main.avatars); a random one is assigned by default.
+    avatar = models.CharField(max_length=24, default=avatars.random_key)
+
+    @property
+    def avatar_data(self):
+        """The icon/colours for this profile's avatar."""
+        return avatars.get(self.avatar)
 
     def __str__(self):
         return self.user.username
@@ -55,6 +64,11 @@ def save_user_profile(sender, instance, **kwargs):
 class Team(models.Model):
     name = models.CharField(max_length=20, unique=True)
     abbreviation = models.CharField(max_length=3)
+
+    @property
+    def flag(self):
+        """A flagcdn region code for this team's country, or None."""
+        return flags.code_for(self.abbreviation)
 
     def __str__(self):
         return self.name

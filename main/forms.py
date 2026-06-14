@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from . import avatars
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="username", max_length=20)
@@ -21,6 +23,14 @@ class SimplePasswordForm(forms.Form):
         if p1 and p2 and p1 != p2:
             self.add_error("new_password2", "The two passwords don't match.")
         return cleaned
+
+
+class ProfileForm(forms.Form):
+    """Edit display name and chosen avatar."""
+
+    first_name = forms.CharField(max_length=20, required=False)
+    last_name = forms.CharField(max_length=20, required=False)
+    avatar = forms.ChoiceField(choices=[(key, key) for key in avatars.KEYS])
 
 
 class SignupForm(UserCreationForm):

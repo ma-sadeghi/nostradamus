@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.decorators.http import require_POST
 
-from . import forms, models, utils
+from . import avatars, forms, models, utils
 from .models import Tournament
 
 
@@ -100,6 +100,49 @@ def home_view(request):
         "tournaments": Tournament.objects.all(),
     }
     return render(request, "home.html", data)
+
+
+@login_required
+def profile_view(request):
+    """Edit display name + avatar, and optionally set a new password."""
+    user = request.user
+    profile = user.profile
+    profile_form = forms.ProfileForm(
+        initial={
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "avatar": profile.avatar,
+        }
+    )
+    password_form = forms.SimplePasswordForm()
+
+    if request.method == "POST":
+        if "save_password" in request.POST:
+            password_form = forms.SimplePasswordForm(request.POST)
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data["new_password1"])
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password updated.")
+                return redirect("profile")
+        else:
+            profile_form = forms.ProfileForm(request.POST)
+            if profile_form.is_valid():
+                user.first_name = profile_form.cleaned_data["first_name"]
+                user.last_name = profile_form.cleaned_data["last_name"]
+                user.save(update_fields=["first_name", "last_name"])
+                profile.avatar = profile_form.cleaned_data["avatar"]
+                profile.save(update_fields=["avatar"])
+                messages.success(request, "Profile updated.")
+                return redirect("profile")
+
+    data = {
+        "form": profile_form,
+        "password_form": password_form,
+        "avatars": avatars.choices(),
+        "contests": utils.get_contests(request.user),
+    }
+    return render(request, "profile.html", data)
 
 
 class PredictView(View):
