@@ -45,12 +45,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fields.length !== 2) return;
     const home = fields[0].value.trim();
     const away = fields[1].value.trim();
-    if (home === "" || away === "") return; // only save complete predictions
-    const key = `${home}:${away}`;
+    const bothEmpty = home === "" && away === "";
+    const bothFilled = home !== "" && away !== "";
+    // Partial (exactly one filled): wait for the pair before doing anything.
+    if (!bothEmpty && !bothFilled) return;
+    // bothEmpty means "clear my prediction"; bothFilled means "save it".
+    const key = bothEmpty ? "" : `${home}:${away}`;
     if (lastSaved.get(row) === key) return; // nothing changed
 
+    const removing = bothEmpty;
     inFlight += 1;
-    setStatus("saving", '<i class="fas fa-circle-notch fa-spin"></i> Saving…');
+    setStatus(
+      "saving",
+      removing
+        ? '<i class="fas fa-circle-notch fa-spin"></i> Removing…'
+        : '<i class="fas fa-circle-notch fa-spin"></i> Saving…'
+    );
     row.classList.add("is-saving");
     try {
       const res = await fetch(url, {
@@ -74,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       inFlight -= 1;
       if (inFlight === 0 && !hadError) {
-        setStatus("saved", '<i class="fas fa-check"></i> All predictions saved');
+        setStatus("saved", '<i class="fas fa-check"></i> All changes saved');
       }
     }
   }
@@ -84,7 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fields.length === 2) {
       const home = fields[0].value.trim();
       const away = fields[1].value.trim();
-      if (home !== "" && away !== "") lastSaved.set(row, `${home}:${away}`);
+      // "" marks an unset row, so clearing it again is a no-op while clearing a
+      // saved bet ("h:a" -> "") still fires a delete.
+      lastSaved.set(row, home !== "" && away !== "" ? `${home}:${away}` : "");
     }
     fields.forEach((input) => {
       input.addEventListener("input", () => {

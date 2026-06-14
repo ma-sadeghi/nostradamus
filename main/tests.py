@@ -200,6 +200,20 @@ class PredictViewTests(BaseData):
         )
         self.assertFalse(Bet.objects.filter(game=self.upcoming).exists())
 
+    def test_post_deletes_cleared_prediction(self):
+        Bet.objects.create(
+            user=self.user,
+            game=self.upcoming,
+            contest=self.contest,
+            home_score=2,
+            away_score=2,
+        )
+        self.client.post(
+            reverse("predict", args=[self.contest.name]),
+            {f"home_{self.upcoming.id}": "", f"away_{self.upcoming.id}": ""},
+        )
+        self.assertFalse(Bet.objects.filter(game=self.upcoming).exists())
+
 
 class StandingTests(BaseData):
     def test_non_member_gets_404(self):
@@ -354,6 +368,21 @@ class SaveBetTests(BaseData):
             self._url(self.upcoming), {"home_score": "1", "away_score": ""}
         )
         self.assertEqual(response.status_code, 400)
+        self.assertFalse(Bet.objects.filter(game=self.upcoming).exists())
+
+    def test_autosave_deletes_when_both_cleared(self):
+        Bet.objects.create(
+            user=self.user,
+            game=self.upcoming,
+            contest=self.contest,
+            home_score=1,
+            away_score=1,
+        )
+        response = self.client.post(
+            self._url(self.upcoming), {"home_score": "", "away_score": ""}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json().get("deleted"))
         self.assertFalse(Bet.objects.filter(game=self.upcoming).exists())
 
     def test_autosave_non_member_404(self):

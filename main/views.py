@@ -178,14 +178,22 @@ class PredictView(View):
         games = contest.tournament.games.all()
         bets = {b.game_id: b for b in request.user.bets.filter(contest=contest)}
         saved = 0
+        removed = 0
         for game in games:
             if game.is_locked:  # cannot change a prediction after kickoff
                 continue
-            home = _parse_score(request.POST.get(f"home_{game.id}"))
-            away = _parse_score(request.POST.get(f"away_{game.id}"))
-            if home is None or away is None:  # ignore blank or partial rows
-                continue
+            raw_home = (request.POST.get(f"home_{game.id}") or "").strip()
+            raw_away = (request.POST.get(f"away_{game.id}") or "").strip()
             bet = bets.get(game.id)
+            if not raw_home and not raw_away:  # cleared row — drop any saved bet
+                if bet is not None:
+                    bet.delete()
+                    removed += 1
+                continue
+            home = _parse_score(raw_home)
+            away = _parse_score(raw_away)
+            if home is None or away is None:  # ignore partial rows
+                continue
             if bet is None:
                 models.Bet.objects.create(
                     user=request.user,
@@ -200,20 +208,36 @@ class PredictView(View):
                 bet.away_score = away
                 bet.save()
                 saved += 1
-        messages.success(request, f"Saved {saved} prediction(s).")
+        parts = []
+        if saved:
+            parts.append(f"saved {saved}")
+        if removed:
+            parts.append(f"removed {removed}")
+        messages.success(
+            request,
+            f"Predictions {' and '.join(parts)}." if parts else "No changes to save.",
+        )
         return redirect("predict", contest=contest.name)
 
 
 @login_required
 @require_POST
 def save_bet(request, contest, game_id):
-    """Autosave a single prediction (one match) for the current user."""
+    """Autosave a single prediction, or delete it when both fields are cleared."""
     contest = get_object_or_404(request.user.contests, name=contest)
     game = get_object_or_404(models.Game, id=game_id, tournament=contest.tournament)
     if game.is_locked:
         return JsonResponse({"ok": False, "error": "locked"}, status=409)
-    home = _parse_score(request.POST.get("home_score"))
-    away = _parse_score(request.POST.get("away_score"))
+    raw_home = (request.POST.get("home_score") or "").strip()
+    raw_away = (request.POST.get("away_score") or "").strip()
+    if not raw_home and not raw_away:
+        # Both fields cleared — remove the prediction entirely.
+        models.Bet.objects.filter(
+            user=request.user, game=game, contest=contest
+        ).delete()
+        return JsonResponse({"ok": True, "deleted": True})
+    home = _parse_score(raw_home)
+    away = _parse_score(raw_away)
     if home is None or away is None:
         return JsonResponse({"ok": False, "error": "invalid"}, status=400)
     models.Bet.objects.update_or_create(
