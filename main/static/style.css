@@ -650,6 +650,12 @@ h3 {
   margin-bottom: 8px;
 }
 
+.field__opt {
+  font-weight: 400;
+  text-transform: none;
+  color: var(--ink-faint);
+}
+
 .input,
 .select {
   width: 100%;

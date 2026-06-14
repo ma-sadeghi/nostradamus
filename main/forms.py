@@ -24,12 +24,17 @@ class SimplePasswordForm(forms.Form):
 
 
 class SignupForm(UserCreationForm):
-    first_name = forms.CharField(label="first_name", max_length=20)
-    last_name = forms.CharField(label="last_name", max_length=20)
+    first_name = forms.CharField(label="first_name", max_length=20, required=False)
+    last_name = forms.CharField(label="last_name", max_length=20, required=False)
 
     class Meta:
         model = User
         fields = ("username", "first_name", "last_name", "password1", "password2")
+
+    def clean_username(self):
+        # Usernames are stored lowercase so they're canonical (login is already
+        # case-insensitive). Avoids near-duplicate accounts differing only by case.
+        return self.cleaned_data["username"].strip().lower()
 
 
 # LABEL IS IRRELEVANT, VAR NAME MUST MATCH NAME TAG OF HTML

@@ -55,6 +55,30 @@ class AuthTests(TestCase):
         self.assertRedirects(response, reverse("home"))
         self.assertTrue(User.objects.filter(username="annlee").exists())
 
+    def test_signup_lowercases_username(self):
+        self.client.post(
+            reverse("signup"),
+            {
+                "username": "MixedCase",
+                "password1": "Predict2026!",
+                "password2": "Predict2026!",
+            },
+        )
+        self.assertTrue(User.objects.filter(username="mixedcase").exists())
+        self.assertFalse(User.objects.filter(username="MixedCase").exists())
+
+    def test_signup_name_is_optional(self):
+        response = self.client.post(
+            reverse("signup"),
+            {
+                "username": "noname",
+                "password1": "Predict2026!",
+                "password2": "Predict2026!",
+            },
+        )
+        self.assertRedirects(response, reverse("home"))
+        self.assertTrue(User.objects.filter(username="noname").exists())
+
     def test_login_success_redirects_home(self):
         User.objects.create_user("bob", password="Predict2026!")
         response = self.client.post(
@@ -381,6 +405,10 @@ class CreateUsersCommandTests(TestCase):
         user = User.objects.get(username="newpal")
         self.assertTrue(user.has_usable_password())
         self.assertTrue(user.profile.must_change_password)
+
+    def test_usernames_are_lowercased(self):
+        call_command("create_users", "MixedPal", stdout=StringIO())
+        self.assertTrue(User.objects.filter(username="mixedpal").exists())
 
     def test_adds_users_to_contest(self):
         tournament = Tournament.objects.create(name="T")

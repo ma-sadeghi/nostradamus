@@ -36,11 +36,9 @@ class Command(BaseCommand):
             path = Path(options["file"])
             if not path.exists():
                 raise CommandError(f"File not found: {path}")
-            names += [
-                line.strip() for line in path.read_text().splitlines() if line.strip()
-            ]
-        # De-duplicate while preserving order.
-        names = list(dict.fromkeys(names))
+            names += [line for line in path.read_text().splitlines() if line.strip()]
+        # Usernames are stored lowercase (canonical); de-duplicate, keep order.
+        names = list(dict.fromkeys(n.strip().lower() for n in names))
         if not names:
             raise CommandError("Give at least one username (args or --file).")
 

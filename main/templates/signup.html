@@ -19,7 +19,7 @@
 
       <div class="form-grid">
         <div class="field">
-          <label class="field__label" for="first_name">First name</label>
+          <label class="field__label" for="first_name">First name <span class="field__opt">(optional)</span></label>
           <input class="input {% if form.first_name.errors %}input--invalid{% endif %}"
             id="first_name" name="first_name" type="text" autocomplete="given-name"
             placeholder="First name" value="{{ form.first_name.value|default_if_none:'' }}">
@@ -29,7 +29,7 @@
         </div>
 
         <div class="field">
-          <label class="field__label" for="last_name">Last name</label>
+          <label class="field__label" for="last_name">Last name <span class="field__opt">(optional)</span></label>
           <input class="input {% if form.last_name.errors %}input--invalid{% endif %}"
             id="last_name" name="last_name" type="text" autocomplete="family-name"
             placeholder="Last name" value="{{ form.last_name.value|default_if_none:'' }}">
