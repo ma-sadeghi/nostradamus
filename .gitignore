@@ -82,11 +82,16 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-# .env
+.env
 .venv
 env/
 venv/
 ENV/
+
+# Local SQLite database and backups (contains user data — never commit)
+db.sqlite3
+*.sqlite3
+*.sqlite3.bak
 
 # Spyder project settings
 .spyderproject
@@ -108,3 +113,6 @@ staticfiles
 
 # VS Code
 .vscode/*
+
+# Local UI preview screenshots
+.preview/

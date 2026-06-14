@@ -1,20 +1,12 @@
-"""
-WSGI config for Nostradamus project.
+"""WSGI entry point exposing the ``application`` callable for the project.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
+Static files are served by WhiteNoise via middleware (see settings.MIDDLEWARE).
 """
 
 import os
 
 from django.core.wsgi import get_wsgi_application
-from whitenoise import WhiteNoise
-
-from .settings import STATIC_ROOT
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Nostradamus.settings")
 
 application = get_wsgi_application()
-application = WhiteNoise(application, root=STATIC_ROOT)
