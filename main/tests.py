@@ -104,6 +104,15 @@ class AuthTests(TestCase):
         response = self.client.post(reverse("login"), {})
         self.assertEqual(response.status_code, 200)
 
+    def test_invalid_login_shows_inline_form_error(self):
+        User.objects.create_user("erin", password="Predict2026!")
+        response = self.client.post(
+            reverse("login"), {"username": "erin", "password": "nope"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "form-alert")
+        self.assertTrue(response.context["form"].non_field_errors())
+
 
 class ScoringTests(BaseData):
     def _bet(self, game, home, away):

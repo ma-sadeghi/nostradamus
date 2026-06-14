@@ -737,6 +737,25 @@ h3 {
   border-color: var(--lose);
 }
 
+/* Form-level error (e.g. bad credentials), shown inside the form itself. */
+.form-alert {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--lose);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.form-alert i {
+  flex: none;
+}
+
 .form-aside {
   margin-top: 18px;
   text-align: center;

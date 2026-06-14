@@ -55,18 +55,17 @@ class LoginView(View):
 
     def post(self, request):
         form = forms.LoginForm(request.POST)
-        user = None
         if form.is_valid():
             user = authenticate(
                 request,
                 username=form.cleaned_data["username"],
                 password=form.cleaned_data["password"],
             )
-        if user is None:
-            messages.error(request, "Invalid username or password.")
-            return render(request, "login.html", {"form": form})
-        login(request, user)
-        return redirect("home")
+            if user is not None:
+                login(request, user)
+                return redirect("home")
+            form.add_error(None, "Invalid username or password.")
+        return render(request, "login.html", {"form": form})
 
 
 def logout_view(request):

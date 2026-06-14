@@ -17,22 +17,37 @@
     <form action="{% url 'login' %}" method="post" novalidate>
       {% csrf_token %}
 
+      {% if form.non_field_errors %}
+      <div class="form-alert" role="alert">
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <span>{{ form.non_field_errors|join:" " }}</span>
+      </div>
+      {% endif %}
+
       <div class="field">
         <label class="field__label" for="username">Username</label>
         <div class="input-group">
           <span class="input-group__icon" aria-hidden="true"><i class="fas fa-user"></i></span>
-          <input class="input" id="username" name="username" type="text"
-            autocomplete="username" placeholder="Your username" required>
+          <input class="input {% if form.non_field_errors or form.username.errors %}input--invalid{% endif %}"
+            id="username" name="username" type="text" autocomplete="username"
+            placeholder="Your username" value="{{ form.username.value|default_if_none:'' }}" required>
         </div>
+        {% for error in form.username.errors %}
+        <span class="field-error">{{ error }}</span>
+        {% endfor %}
       </div>
 
       <div class="field">
         <label class="field__label" for="password">Password</label>
         <div class="input-group">
           <span class="input-group__icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
-          <input class="input" id="password" name="password" type="password"
+          <input class="input {% if form.non_field_errors or form.password.errors %}input--invalid{% endif %}"
+            id="password" name="password" type="password"
             autocomplete="current-password" placeholder="Your password" required>
         </div>
+        {% for error in form.password.errors %}
+        <span class="field-error">{{ error }}</span>
+        {% endfor %}
       </div>
 
       <button type="submit" class="btn btn--primary btn--block btn--lg">
