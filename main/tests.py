@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from main import utils
+from main import avatars, quotes, utils
 from main.models import Bet, Contest, Game, GameResource, Profile, Team, Tournament
 
 
@@ -440,3 +440,99 @@ class SyncResultsGateTests(BaseData):
         call_command("sync_results", "--tournament", "Cup", stdout=out)
         self.assertIn("No matches due yet", out.getvalue())
         self.assertFalse(Game.objects.filter(home_score__isnull=False).exists())
+
+
+class ProfileTests(BaseData):
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.user)
+
+    def test_profile_page_loads(self):
+        response = self.client.get(reverse("profile"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_save_profile_updates_name_and_avatar(self):
+        self.client.post(
+            reverse("profile"),
+            {
+                "save_profile": "1",
+                "first_name": "Amin",
+                "last_name": "Sadeghi",
+                "avatar": "moon",
+            },
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Amin")
+        self.assertEqual(self.user.last_name, "Sadeghi")
+        self.assertEqual(self.user.profile.avatar, "moon")
+
+    def test_save_profile_rejects_unknown_avatar(self):
+        self.client.post(
+            reverse("profile"),
+            {"save_profile": "1", "first_name": "X", "avatar": "not-an-avatar"},
+        )
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.first_name, "X")
+
+    def test_change_password_from_profile(self):
+        self.client.post(
+            reverse("profile"),
+            {"save_password": "1", "new_password1": "newpass", "new_password2": "newpass"},
+        )
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("newpass"))
+
+
+class AvatarTests(BaseData):
+    def test_new_profile_gets_a_valid_random_avatar(self):
+        user = User.objects.create_user("freshpal", password="Predict2026!")
+        self.assertIn(user.profile.avatar, avatars.KEYS)
+
+    def test_avatar_data_has_icon_and_colours(self):
+        data = avatars.get("moon")
+        self.assertIn("icon", data)
+        self.assertIn("c1", data)
+
+    def test_unknown_avatar_key_falls_back(self):
+        self.assertEqual(avatars.get("bogus"), avatars.AVATARS[avatars.DEFAULT])
+
+
+class FlagTests(TestCase):
+    def test_known_abbreviation_maps_to_code(self):
+        team = Team.objects.create(name="Brazil", abbreviation="BRA")
+        self.assertEqual(team.flag, "br")
+
+    def test_home_nation_uses_subdivision_code(self):
+        team = Team.objects.create(name="England", abbreviation="ENG")
+        self.assertEqual(team.flag, "gb-eng")
+
+    def test_unknown_abbreviation_has_no_flag(self):
+        team = Team.objects.create(name="Placeholder", abbreviation="W1")
+        self.assertIsNone(team.flag)
+
+
+class QuoteTests(BaseData):
+    def test_random_quote_has_text_and_author(self):
+        q = quotes.random()
+        self.assertIn("text", q)
+        self.assertIn("author", q)
+
+    def test_quote_is_in_page_context(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+        self.assertIn("quote", response.context)
+
+
+class GreetingTests(BaseData):
+    def test_greeting_uses_first_name(self):
+        self.user.first_name = "Ahmad"
+        self.user.save(update_fields=["first_name"])
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, "Ahmad")
+
+    def test_greeting_falls_back_to_username(self):
+        nameless = User.objects.create_user("solonick", password="Predict2026!")
+        self.client.force_login(nameless)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, "solonick")
