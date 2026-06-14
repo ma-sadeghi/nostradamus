@@ -39,8 +39,8 @@
           </td>
           <td class="col-player">
             <span class="player">
-              <span class="player__avatar" aria-hidden="true">{{ row.user|stringformat:"s"|slice:":1" }}</span>
-              {{ row.user }}
+              {% include '_avatar.html' with profile=row.user.profile class='avatar--sm' %}
+              {{ row.user.get_full_name|default:row.user.username }}
             </span>
           </td>
           <td class="col-stat">{{ row.preds_exact }}</td>
@@ -64,7 +64,7 @@
 </section>
 
 <p class="prophecy reveal reveal-3">
-  A very great deal more truth can become known than can be proven.
-  <cite>Richard Feynman</cite>
+  {{ quote.text }}
+  <cite>{{ quote.author }}</cite>
 </p>
 {% endblock %}

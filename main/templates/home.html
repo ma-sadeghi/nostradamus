@@ -6,7 +6,7 @@
 {% block content %}
 <header class="page-head reveal reveal-1">
   <p class="eyebrow">Your Crystal Ball</p>
-  <h1>Hello, <span class="gold-text">{{ request.user.username }}</span></h1>
+  <h1>Hello, <span class="gold-text">{{ request.user.first_name|default:request.user.username }}</span></h1>
   <p class="sub">Predict the scores, outwit your friends, and prove you read the future best.</p>
 </header>
 
@@ -98,7 +98,7 @@
 </div>
 
 <p class="prophecy reveal reveal-3">
-  The first principle is that you must not fool yourself — and you are the easiest person to fool.
-  <cite>Richard Feynman</cite>
+  {{ quote.text }}
+  <cite>{{ quote.author }}</cite>
 </p>
 {% endblock %}

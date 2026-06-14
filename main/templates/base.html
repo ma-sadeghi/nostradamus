@@ -26,6 +26,92 @@
     })();
   </script>
 
+  <script>
+    // Pick light/dark before paint (no flash). "auto" follows the viewer's own
+    // sunrise/sunset, approximated from their timezone — so dusk in Tehran and
+    // dusk in New York flip the theme at the right local moment.
+    (function () {
+      var KEY = "theme"; // 'auto' | 'light' | 'dark'
+      var d = document.documentElement;
+      var TZ = {
+        "Asia/Tehran": [35.7, 51.4], "Asia/Baghdad": [33.3, 44.4],
+        "Asia/Dubai": [25.2, 55.3], "Asia/Riyadh": [24.7, 46.7],
+        "Asia/Karachi": [24.9, 67.0], "Asia/Kolkata": [28.6, 77.2],
+        "Asia/Tokyo": [35.7, 139.7], "Asia/Shanghai": [31.2, 121.5],
+        "Asia/Seoul": [37.6, 127.0], "Asia/Singapore": [1.35, 103.8],
+        "America/New_York": [40.7, -74.0], "America/Toronto": [43.7, -79.4],
+        "America/Chicago": [41.9, -87.6], "America/Denver": [39.7, -105.0],
+        "America/Los_Angeles": [34.1, -118.2], "America/Vancouver": [49.3, -123.1],
+        "America/Edmonton": [53.5, -113.5], "America/Phoenix": [33.4, -112.1],
+        "America/Mexico_City": [19.4, -99.1], "America/Sao_Paulo": [-23.5, -46.6],
+        "Europe/London": [51.5, -0.1], "Europe/Paris": [48.9, 2.4],
+        "Europe/Berlin": [52.5, 13.4], "Europe/Madrid": [40.4, -3.7],
+        "Europe/Rome": [41.9, 12.5], "Europe/Amsterdam": [52.4, 4.9],
+        "Europe/Istanbul": [41.0, 29.0], "Europe/Moscow": [55.8, 37.6],
+        "Europe/Stockholm": [59.3, 18.1], "Africa/Cairo": [30.0, 31.2],
+        "Africa/Johannesburg": [-26.2, 28.0], "Africa/Lagos": [6.5, 3.4],
+        "Australia/Sydney": [-33.9, 151.2]
+      };
+      function coords() {
+        var tz = null;
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
+        if (tz && TZ[tz]) return TZ[tz];
+        return [40, (-new Date().getTimezoneOffset() / 60) * 15];
+      }
+      function sunAltitude(date, lat, lng) {
+        var rad = Math.PI / 180;
+        var days = date.valueOf() / 86400000 - 0.5 + 2440588 - 2451545;
+        var M = rad * (357.5291 + 0.98560028 * days);
+        var L = M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M)
+          + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI;
+        var e = rad * 23.4397;
+        var dec = Math.asin(Math.sin(e) * Math.sin(L));
+        var ra = Math.atan2(Math.sin(L) * Math.cos(e), Math.cos(L));
+        var H = rad * (280.16 + 360.9856235 * days) + rad * lng - ra;
+        var phi = rad * lat;
+        return Math.asin(Math.sin(phi) * Math.sin(dec)
+          + Math.cos(phi) * Math.cos(dec) * Math.cos(H));
+      }
+      function autoTheme() {
+        var c = coords();
+        return sunAltitude(new Date(), c[0], c[1]) > 0 ? "light" : "dark";
+      }
+      function pref() {
+        try { return localStorage.getItem(KEY) || "auto"; } catch (e) { return "auto"; }
+      }
+      function refreshIcon() {
+        var btn = document.querySelector(".theme-toggle");
+        if (!btn) return;
+        var p = d.dataset.themePref || "auto";
+        var icon = p === "light" ? "fa-sun" : (p === "dark" ? "fa-moon" : "fa-circle-half-stroke");
+        var label = "Theme: " + p + " — tap to change";
+        btn.querySelector("i").className = "fas " + icon;
+        btn.setAttribute("aria-label", label);
+        btn.setAttribute("title", label);
+      }
+      function apply(p) {
+        d.dataset.themePref = p;
+        d.dataset.theme = p === "auto" ? autoTheme() : p;
+        refreshIcon();
+      }
+      function cycle() {
+        var order = ["auto", "light", "dark"];
+        var next = order[(order.indexOf(pref()) + 1) % order.length];
+        try { localStorage.setItem(KEY, next); } catch (e) { }
+        apply(next);
+      }
+      window.NostraTheme = { cycle: cycle, apply: apply, refreshIcon: refreshIcon };
+      apply(pref());
+      document.addEventListener("DOMContentLoaded", function () {
+        var btn = document.querySelector(".theme-toggle");
+        if (btn) btn.addEventListener("click", cycle);
+        refreshIcon();
+      });
+      // Re-check "auto" every 10 min so it flips at dawn/dusk without a reload.
+      setInterval(function () { if (pref() === "auto") apply("auto"); }, 600000);
+    })();
+  </script>
+
   <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,22 +142,47 @@
         </label>
 
         <div class="nav__links">
+          <button type="button" class="theme-toggle" aria-label="Toggle theme">
+            <i class="fas fa-circle-half-stroke"></i>
+          </button>
           {% if request.user.is_authenticated %}
-          <span class="nav__user">{{ request.user.username }}</span>
+          <a class="nav__user" href="{% url 'profile' %}" title="Your profile">
+            {% include '_avatar.html' with profile=request.user.profile class='avatar--sm' %}
+            <span>{{ request.user.first_name|default:request.user.username }}</span>
+          </a>
           <a class="nav__link" href="{% url 'home' %}">Home</a>
+
+          <div class="dropdown">
+            <a class="nav__link" href="{% url 'home' %}" aria-haspopup="true">
+              Competitions <i class="fas fa-chevron-down" style="font-size:.7em;margin-left:2px"></i>
+            </a>
+            <div class="dropdown__menu" role="menu">
+              <div class="dropdown__label">Your competitions</div>
+              {% if contests.all %}
+                {% for contest in contests.active %}
+                <a class="dropdown__item" role="menuitem"
+                  href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
+                {% endfor %}
+                {% for contest in contests.past %}
+                <a class="dropdown__item" role="menuitem" href="{% url 'predict' contest.name %}">
+                  <i class="fas fa-clock-rotate-left" style="font-size:.8em"></i> {{ contest.name }}</a>
+                {% endfor %}
+              {% else %}
+                <div class="dropdown__empty">No competitions yet</div>
+              {% endif %}
+            </div>
+          </div>
 
           <div class="dropdown">
             <a class="nav__link" href="{% url 'standing_home' %}" aria-haspopup="true">
               Standings <i class="fas fa-chevron-down" style="font-size:.7em;margin-left:2px"></i>
             </a>
             <div class="dropdown__menu" role="menu">
-              <div class="dropdown__label">Active</div>
-              {% if contests %}
+              <div class="dropdown__label">Leaderboards</div>
+              {% if contests.all %}
                 {% for contest in contests.active %}
                 <a class="dropdown__item" role="menuitem"
                   href="{% url 'standing' contest.name %}">{{ contest.name }}</a>
-                {% empty %}
-                <div class="dropdown__empty">No active competitions</div>
                 {% endfor %}
                 {% if contests.past %}
                 <div class="dropdown__divider"></div>
@@ -121,11 +232,9 @@
 
   <footer class="footer">
     <p class="footer__brand">NOSTRADAMUS &middot; World Cup 2026</p>
-    <p>&copy; <script>document.write(new Date().getFullYear())</script> Amin Sadeghi &middot;
-      Predict boldly, for the future favors the bold.</p>
-    <p class="footer__credit">
-      DNS by <a href="https://freedns.afraid.org/" target="_blank" rel="noopener">Free DNS</a>
-    </p>
+    <p class="footer__meta">&copy; {% now "Y" %} Amin Sadeghi &middot; Predict boldly, for the future favors the bold.<a
+        class="footer__credit" href="https://freedns.afraid.org/" target="_blank"
+        rel="noopener" title="Subdomain DNS courtesy of Free DNS"> &middot; DNS by Free DNS</a></p>
   </footer>
 
   {% block scripts %}{% endblock %}

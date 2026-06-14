@@ -14,9 +14,11 @@
   <div class="card__body" style="text-align:center">
     <div class="hidden-orb" aria-hidden="true">🔮</div>
     <div class="scoreline">
-      <span class="scoreline__team scoreline__team--home">{{ game.home }}</span>
+      <span class="scoreline__team scoreline__team--home">
+        {% include '_flag.html' with team=game.home %}{{ game.home }}</span>
       <span class="scoreline__score" style="color:var(--ink-faint)">vs</span>
-      <span class="scoreline__team scoreline__team--away">{{ game.away }}</span>
+      <span class="scoreline__team scoreline__team--away">
+        {{ game.away }}{% include '_flag.html' with team=game.away %}</span>
     </div>
     <p class="center-note" style="margin-top:18px">
       Everyone's predictions stay sealed until kickoff. Come back once this match begins

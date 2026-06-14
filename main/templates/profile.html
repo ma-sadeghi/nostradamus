@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your profile — Nostradamus{% endblock %}
+
+{% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">Your Profile</p>
+  <h1>Make it yours</h1>
+  <p class="sub">Pick an avatar, set your name, and manage your password.</p>
+</header>
+
+<div class="profile-grid">
+  <section class="card reveal reveal-1 profile-grid__main">
+    <div class="card__head">
+      <span class="card__icon" aria-hidden="true"><i class="fas fa-id-badge"></i></span>
+      <h2>Profile</h2>
+    </div>
+    <div class="card__body">
+      <form action="{% url 'profile' %}" method="post">
+        {% csrf_token %}
+
+        <fieldset class="avatar-picker">
+          <legend class="field__label">Avatar</legend>
+          <div class="avatar-grid">
+            {% for key, data in avatars %}
+            <label class="avatar-option">
+              <input type="radio" name="avatar" value="{{ key }}"
+                {% if key == form.avatar.value %}checked{% endif %}>
+              <span class="avatar avatar--md"
+                style="--av-c1: {{ data.c1 }}; --av-c2: {{ data.c2 }};">
+                <i class="fas {{ data.icon }}"></i>
+              </span>
+            </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label" for="first_name">First name</label>
+            <input class="input" id="first_name" name="first_name" type="text"
+              autocomplete="given-name" placeholder="First name"
+              value="{{ form.first_name.value|default_if_none:'' }}">
+          </div>
+          <div class="field">
+            <label class="field__label" for="last_name">Last name</label>
+            <input class="input" id="last_name" name="last_name" type="text"
+              autocomplete="family-name" placeholder="Last name"
+              value="{{ form.last_name.value|default_if_none:'' }}">
+          </div>
+        </div>
+
+        <button type="submit" name="save_profile" value="1" class="btn btn--primary">
+          <i class="fas fa-floppy-disk" aria-hidden="true"></i> Save profile
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section class="card reveal reveal-2">
+    <div class="card__head">
+      <span class="card__icon" aria-hidden="true"><i class="fas fa-key"></i></span>
+      <h2>Password</h2>
+    </div>
+    <div class="card__body">
+      <form action="{% url 'profile' %}" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+          <label class="field__label" for="new_password1">New password</label>
+          <input class="input" id="new_password1" name="new_password1" type="password"
+            autocomplete="new-password" placeholder="New password">
+        </div>
+        <div class="field">
+          <label class="field__label" for="new_password2">Confirm password</label>
+          <input class="input {% if password_form.new_password2.errors %}input--invalid{% endif %}"
+            id="new_password2" name="new_password2" type="password"
+            autocomplete="new-password" placeholder="Repeat password">
+          {% for error in password_form.new_password2.errors %}
+          <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <button type="submit" name="save_password" value="1" class="btn btn--ghost">
+          <i class="fas fa-lock" aria-hidden="true"></i> Change password
+        </button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -46,6 +46,7 @@
       <div class="match {% if item.locked %}match--locked{% endif %} {% if item.game.isplayoff %}match--playoff{% endif %}"
         data-row data-game-id="{{ item.game.id }}"{% if not item.locked %} data-save-url="{% url 'save_bet' contest.name item.game.id %}"{% endif %}>
         <div class="match__team match__team--home">
+          {% include '_flag.html' with team=item.game.home %}
           <span>{{ item.game.home }}</span>
         </div>
 
@@ -104,6 +105,7 @@
 
         <div class="match__team match__team--away">
           <span>{{ item.game.away }}</span>
+          {% include '_flag.html' with team=item.game.away %}
         </div>
       </div>
       {% endfor %}
@@ -128,8 +130,8 @@
 </form>
 
 <p class="prophecy reveal reveal-3">
-  A very great deal more truth can become known than can be proven.
-  <cite>Richard Feynman</cite>
+  {{ quote.text }}
+  <cite>{{ quote.author }}</cite>
 </p>
 
 {% if rounds %}

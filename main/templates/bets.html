@@ -16,13 +16,15 @@
   </div>
   <div class="card__body">
     <div class="scoreline">
-      <span class="scoreline__team scoreline__team--home">{{ game.home }}</span>
+      <span class="scoreline__team scoreline__team--home">
+        {% include '_flag.html' with team=game.home %}{{ game.home }}</span>
       {% if game.has_result %}
       <span class="scoreline__score">{{ game.home_score }} <span class="score-sep">:</span> {{ game.away_score }}</span>
       {% else %}
       <span class="scoreline__pending">Result pending</span>
       {% endif %}
-      <span class="scoreline__team scoreline__team--away">{{ game.away }}</span>
+      <span class="scoreline__team scoreline__team--away">
+        {{ game.away }}{% include '_flag.html' with team=game.away %}</span>
     </div>
   </div>
 </section>
@@ -36,8 +38,8 @@
     {% for bet, result in bets_and_results %}
     <div class="bet-row">
       <span class="bet-row__user">
-        <span class="player__avatar" aria-hidden="true">{{ bet.user|stringformat:"s"|slice:":1" }}</span>
-        <span>{{ bet.user }}</span>
+        {% include '_avatar.html' with profile=bet.user.profile class='avatar--sm' %}
+        <span>{{ bet.user.get_full_name|default:bet.user.username }}</span>
       </span>
       <span class="bet-row__pred">{{ bet.home_score }}–{{ bet.away_score }}</span>
       {% if result == 'exact' %}
