@@ -1,128 +1,104 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load my_filters %}
+
+{% block title %}Home — Nostradamus{% endblock %}
 
 {% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">Your Crystal Ball</p>
+  <h1>Hello, <span class="gold-text">{{ request.user.username }}</span></h1>
+  <p class="sub">Predict the scores, outwit your friends, and prove you read the future best.</p>
+</header>
 
-<div class="row competitions">
-	<div class="col-lg-4 col-md-6 mb-4">
-		<h1 class="text-center">Competitions</h1>
-		<div class="card">
-			<div class="card-header">
-				Active Competitions
-			</div>
-			<ul class="list-group list-group-flush">
-				{% for contest in contests.active %}
-				<li class="list-group-item">
-					<a href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
-				</li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="card">
-			<div class="card-header">
-				Past Competitions
-			</div>
-			<ul class="list-group list-group-flush">
-				{% for contest in contests.past %}
-				<li class="list-group-item">
-					<a href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
-				</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+<div class="grid-3">
+  <!-- Your competitions -->
+  <section class="card reveal reveal-1">
+    <div class="card__head">
+      <span class="card__icon" aria-hidden="true"><i class="fas fa-trophy"></i></span>
+      <h2>Your competitions</h2>
+    </div>
+    <div class="card__body">
+      {% if contests.active or contests.past %}
+      <ul class="tile-list">
+        {% for contest in contests.active %}
+        <li>
+          <a class="tile" href="{% url 'predict' contest.name %}">
+            <span><i class="fas fa-circle-dot" style="color:var(--win);font-size:.6em;vertical-align:middle"></i>
+              {{ contest.name }}</span>
+            <span class="tile__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+          </a>
+        </li>
+        {% endfor %}
+        {% for contest in contests.past %}
+        <li>
+          <a class="tile tile--past" href="{% url 'predict' contest.name %}">
+            <span><i class="fas fa-clock-rotate-left" style="font-size:.8em"></i> {{ contest.name }}</span>
+            <span class="tile__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-note">No competitions yet. Join one or create your own.</p>
+      {% endif %}
+    </div>
+  </section>
 
-	<div class="col-lg-4 col-md-6 mb-4">
-		<h1 class="text-center">Join a Public Competition</h1>
-		<div class="card bg-light">
-			<article class="card-body p-4">
-				<!-- Success/Error Messages -->
-				{% if 'contest_not_found' in request.GET %}
-				<div class="alert alert-danger">
-					Competition not found. Please check the ID and try again.
-				</div>
-				{% elif 'joined_contest' in request.GET %}
-				<div class="alert alert-success">
-					Successfully joined the competition!
-				</div>
-				{% elif 'already_member' in request.GET %}
-				<div class="alert alert-info">
-					You are already a member of this competition.
-				</div>
-				{% endif %}
+  <!-- Join -->
+  <section class="card reveal reveal-2">
+    <div class="card__head">
+      <span class="card__icon" aria-hidden="true"><i class="fas fa-right-to-bracket"></i></span>
+      <h2>Join a competition</h2>
+    </div>
+    <div class="card__body">
+      <form action="{% url 'join_contest' %}" method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label class="field__label" for="join-id">Competition ID</label>
+          <input class="input" id="join-id" name="contest-id" type="text"
+            placeholder="e.g. office_legends" required>
+        </div>
+        <button type="submit" class="btn btn--ghost btn--block">
+          <i class="fas fa-handshake-simple" aria-hidden="true"></i> Join
+        </button>
+      </form>
+      <p class="form-aside">Ask a friend for their competition ID.</p>
+    </div>
+  </section>
 
-				<form action="{% url 'join_contest' %}" method="post" class="needs-validation" novalidate>
-					{% csrf_token %}
-					<div class="mb-3">
-						<label for="contest-id" class="form-label">Enter Competition ID</label>
-						<input name="contest-id" id="contest-id" class="form-control" placeholder="Competition ID"
-							type="text" required>
-						<div class="invalid-feedback">
-							Please enter a competition ID.
-						</div>
-					</div>
-					<div class="d-grid">
-						<button type="submit" class="btn btn-primary mx-auto px-4">Join</button>
-					</div>
-				</form>
-			</article>
-		</div>
-	</div>
-
-
-	<div class="col-lg-4 col-md-6 mb-4">
-		<h1 class="text-center">Create a Competition</h1>
-		<div class="card bg-light">
-			<article class="card-body p-4">
-				<form action="#" method="post" class="needs-validation" novalidate>
-					{% csrf_token %}
-					<div class="mb-3">
-						<label for="tournament" class="form-label">Choose Tournament</label>
-						<select id="tournament" class="form-select" required>
-							<option selected disabled value="">Choose...</option>
-							{% for tournament in tournaments %}
-							<option value="{{ forloop.counter0 }}">{{ tournament }}</option>
-							{% endfor %}
-						</select>
-						<div class="invalid-feedback">
-							Please select a tournament.
-						</div>
-					</div>
-					<div class="mb-3">
-						<label for="new-contest-id" class="form-label">Competition ID</label>
-						<input name="contest-id" id="new-contest-id" class="form-control" placeholder="Competition ID"
-							type="text" required>
-						<div class="invalid-feedback">
-							Please enter a competition ID.
-						</div>
-					</div>
-					<div class="d-grid">
-						<button type="submit" disabled class="btn btn-primary px-4 mx-auto">Coming Soon!</button>
-					</div>
-				</form>
-			</article>
-		</div>
-	</div>
+  <!-- Create -->
+  <section class="card reveal reveal-3">
+    <div class="card__head">
+      <span class="card__icon" aria-hidden="true"><i class="fas fa-plus"></i></span>
+      <h2>Create a competition</h2>
+    </div>
+    <div class="card__body">
+      <form action="{% url 'create_contest' %}" method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label class="field__label" for="tournament">Tournament</label>
+          <select class="select" id="tournament" name="tournament" required>
+            <option value="" disabled selected>Choose a tournament…</option>
+            {% for tournament in tournaments %}
+            <option value="{{ tournament.id }}">{{ tournament }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="create-id">Competition name</label>
+          <input class="input" id="create-id" name="contest-id" type="text"
+            placeholder="Name your league" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">
+          <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i> Create
+        </button>
+      </form>
+    </div>
+  </section>
 </div>
 
-<script>
-	(() => {
-		'use strict'
-
-		const forms = document.querySelectorAll('.needs-validation')
-
-		Array.from(forms).forEach(form => {
-			form.addEventListener('submit', event => {
-				if (!form.checkValidity()) {
-					event.preventDefault()
-					event.stopPropagation()
-				}
-
-				form.classList.add('was-validated')
-			}, false)
-		})
-	})()
-</script>
-
+<p class="prophecy reveal reveal-3">
+  The first principle is that you must not fool yourself — and you are the easiest person to fool.
+  <cite>Richard Feynman</cite>
+</p>
 {% endblock %}

@@ -1,20 +1,32 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ game.home }} vs {{ game.away }} — Sealed{% endblock %}
+{% block page_class %}page--narrow{% endblock %}
+
 {% block content %}
+<header class="page-head reveal reveal-1" style="text-align:center">
+  <p class="eyebrow">{{ contest.tournament.name }} · {{ contest.name }}</p>
+  <h1>The orb is clouded</h1>
+</header>
 
-<h1 class="text-center">
-  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>
-</h1>
-
-<div class="card text-center">
-  <h4 class="card-header"><span class="font-weight-bold">{{ game.home }} - {{ game.away }}</span></h4>
-
-  <div class="card-message">This game hasn't been played, so you can't see others' predictions yet!</div>
-
-  <div class="card-footer text-muted quote">
-    A very great deal more truth can become known than can be proven. (R.F.)
+<section class="card reveal reveal-1">
+  <div class="card__body" style="text-align:center">
+    <div class="hidden-orb" aria-hidden="true">🔮</div>
+    <div class="scoreline">
+      <span class="scoreline__team scoreline__team--home">{{ game.home }}</span>
+      <span class="scoreline__score" style="color:var(--ink-faint)">vs</span>
+      <span class="scoreline__team scoreline__team--away">{{ game.away }}</span>
+    </div>
+    <p class="center-note" style="margin-top:18px">
+      Everyone's predictions stay sealed until kickoff. Come back once this match begins
+      to see how your rivals called it.
+    </p>
+    <div style="margin-top:22px">
+      <a class="btn btn--ghost" href="{% url 'predict' contest.name %}">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to predictions
+      </a>
+    </div>
   </div>
-</div>
-
+</section>
 {% endblock %}

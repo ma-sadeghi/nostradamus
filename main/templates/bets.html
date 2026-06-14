@@ -1,58 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ game.home }} vs {{ game.away }} — Predictions{% endblock %}
+{% block page_class %}page--narrow{% endblock %}
+
 {% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">{{ contest.tournament.name }} · {{ contest.name }}</p>
+  <h1>The Reveal</h1>
+</header>
 
-<h1 class="text-center">
-  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>
-</h1>
-
-<div class="card text-left">
-  <h4 class="card-header text-center">
-    ({{ game.home_score }})
-    <span class="font-weight-bold">{{ game.home }} - {{ game.away }}</span>
-    ({{ game.away_score }})
-  </h4>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th class="text-left equal-width-col-4" scope="col">Player</th>
-        <th class="text-left equal-width-col-4" scope="col">Prediction</th>
-        <th class="text-left equal-width-col-4" scope="col">Score</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for bet, result in bets_and_results %}
-      <tr>
-        <td class="text-left">{{ bet.user }}</td>
-        <td class="text-left score">{{ bet.home_score }}-{{ bet.away_score }}</td>
-        {% if result == 'exact' %}
-        <td class="text-left">
-          <i class="fas fa-circle exact"></i>
-          <i class="fas fa-circle exact"></i>
-          <i class="fas fa-circle exact"></i>
-        </td>
-        {% elif result == 'goal-diff' %}
-        <td class="text-left">
-          <i class="fas fa-circle {{ result }}"></i>
-          <i class="fas fa-circle {{ result }}"></i>
-        </td>
-        {% elif result == 'winner' %}
-        <td class="text-left">
-          <i class="fas fa-circle {{ result }}"></i>
-        </td>
-        {% elif result == 'zilch' %}
-        <td class="text-left">
-          <i class="fas fa-circle {{ result }}"></i>
-        </td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="card-footer text-muted quote text-center">
-    A very great deal more truth can become known than can be proven. (R.F.)
+<section class="card reveal reveal-1">
+  <div class="card__head" style="justify-content:center">
+    <h2 style="text-align:center;width:100%">Everyone's predictions</h2>
   </div>
-</div>
+  <div class="card__body">
+    <div class="scoreline">
+      <span class="scoreline__team scoreline__team--home">{{ game.home }}</span>
+      {% if game.has_result %}
+      <span class="scoreline__score">{{ game.home_score }} <span class="score-sep">:</span> {{ game.away_score }}</span>
+      {% else %}
+      <span class="scoreline__pending">Result pending</span>
+      {% endif %}
+      <span class="scoreline__team scoreline__team--away">{{ game.away }}</span>
+    </div>
+  </div>
+</section>
 
+<section class="card reveal reveal-2" style="margin-top:18px">
+  <div class="card__head">
+    <span class="card__icon" aria-hidden="true"><i class="fas fa-users-viewfinder"></i></span>
+    <h2>Predictions</h2>
+  </div>
+  <div class="card__body">
+    {% for bet, result in bets_and_results %}
+    <div class="bet-row">
+      <span class="bet-row__user">
+        <span class="player__avatar" aria-hidden="true">{{ bet.user|stringformat:"s"|slice:":1" }}</span>
+        <span>{{ bet.user }}</span>
+      </span>
+      <span class="bet-row__pred">{{ bet.home_score }}–{{ bet.away_score }}</span>
+      {% if result == 'exact' %}
+      <span class="verdict" title="Exact score · 3 pts">
+        <span class="dot dot--exact"></span><span class="dot dot--exact"></span><span class="dot dot--exact"></span>
+        <span class="verdict__label">Exact</span>
+      </span>
+      {% elif result == 'goal-diff' %}
+      <span class="verdict" title="Goal difference · 2 pts">
+        <span class="dot dot--goal-diff"></span><span class="dot dot--goal-diff"></span>
+        <span class="verdict__label">Goal diff</span>
+      </span>
+      {% elif result == 'winner' %}
+      <span class="verdict" title="Correct winner · 1 pt">
+        <span class="dot dot--winner"></span>
+        <span class="verdict__label">Winner</span>
+      </span>
+      {% elif result == 'zilch' %}
+      <span class="verdict verdict--zilch" title="No points">
+        <span class="miss" aria-hidden="true"><i class="fas fa-xmark"></i></span>
+        <span class="verdict__label">Missed</span>
+      </span>
+      {% else %}
+      <span class="verdict verdict--pending">
+        <span class="verdict__label">Pending</span>
+      </span>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p class="empty-note">No predictions were made for this match.</p>
+    {% endfor %}
+  </div>
+  <div class="card__foot">
+    <a href="{% url 'predict' contest.name %}"><i class="fas fa-arrow-left" aria-hidden="true"></i>
+      Back to predictions</a>
+  </div>
+</section>
 {% endblock %}

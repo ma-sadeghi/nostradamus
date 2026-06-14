@@ -1,105 +1,134 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Nostradamus</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Nostradamus{% endblock %}</title>
+  <meta name="description"
+    content="Nostradamus — predict the scores, climb the leaderboard, see who reads the future best.">
 
-  <!-- Load external fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+  <script>
+    // Tell the server the viewer's timezone (once) so dates/times render local.
+    (function () {
+      if (!document.cookie.split("; ").some(function (c) { return c.indexOf("tz=") === 0; })) {
+        try {
+          var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          if (tz) {
+            document.cookie = "tz=" + tz + ";path=/;max-age=31536000;samesite=Lax";
+            if (document.cookie.split("; ").some(function (c) { return c.indexOf("tz=") === 0; })) {
+              location.reload();
+            }
+          }
+        } catch (e) { /* no-op */ }
+      }
+    })();
+  </script>
 
-  <!-- Load external scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 
-  <!-- Load external stylesheets -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    crossorigin="anonymous" referrerpolicy="no-referrer">
 
-  <!-- Load local stylesheets -->
-  <link rel="stylesheet" href="{% static 'nav.css' %}">
   <link rel="stylesheet" href="{% static 'style.css' %}">
-  <link rel="stylesheet" href="{% static 'predict.css' %}">
-  <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon.ico' %}" />
 </head>
 
 <body>
-
-  <!-- Header begins -->
   <header>
-    <nav class="navbar navbar-expand-md bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">Nostradamus</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
-            </li>
-            {% if request.user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Standing
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="dropdown01">
-                <div class="text-primary" style="padding-left: 5px">Active</div>
-                <hr style="margin: 0px; padding: 0px;">
-                {% for contest in contests.active %}
-                <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
-                {% endfor %}
-                <div class="text-primary pt-1" style="padding-left: 5px">Past</div>
-                <hr style="margin: 0px; padding: 0px;">
-                {% for contest in contests.past %}
-                <li><a class="dropdown-item" href="{% url 'standing' contest.name %}">{{ contest.name }}</a></li>
-                {% endfor %}
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-            </li>
-            {% endif %}
-          </ul>
+    <nav class="nav">
+      <div class="nav__inner">
+        <a class="brand" href="{% url 'home' %}" aria-label="Nostradamus home">
+          <img class="brand__mark" src="{% static 'images/logo.png' %}" alt="" width="38" height="38">
+          <span class="brand__word">NOSTRA<b>DAMUS</b></span>
+        </a>
+
+        <input type="checkbox" class="nav__toggle" id="nav-toggle" aria-hidden="true">
+        <label class="nav__burger" for="nav-toggle" role="button" tabindex="0"
+          aria-label="Toggle menu" aria-controls="nav-toggle">
+          <span></span>
+        </label>
+
+        <div class="nav__links">
           {% if request.user.is_authenticated %}
-          <span class="d-none d-md-block badge bg-success" id="user-info">
-            Welcome <span id="username">{{ request.user.username }}</span>
-          </span>
+          <span class="nav__user">{{ request.user.username }}</span>
+          <a class="nav__link" href="{% url 'home' %}">Home</a>
+
+          <div class="dropdown">
+            <a class="nav__link" href="{% url 'standing_home' %}" aria-haspopup="true">
+              Standings <i class="fas fa-chevron-down" style="font-size:.7em;margin-left:2px"></i>
+            </a>
+            <div class="dropdown__menu" role="menu">
+              <div class="dropdown__label">Active</div>
+              {% if contests %}
+                {% for contest in contests.active %}
+                <a class="dropdown__item" role="menuitem"
+                  href="{% url 'standing' contest.name %}">{{ contest.name }}</a>
+                {% empty %}
+                <div class="dropdown__empty">No active competitions</div>
+                {% endfor %}
+                {% if contests.past %}
+                <div class="dropdown__divider"></div>
+                <div class="dropdown__label">Past</div>
+                {% for contest in contests.past %}
+                <a class="dropdown__item" role="menuitem"
+                  href="{% url 'standing' contest.name %}">{{ contest.name }}</a>
+                {% endfor %}
+                {% endif %}
+              {% else %}
+                <div class="dropdown__empty">No competitions yet</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <a class="nav__link" href="{% url 'logout' %}">Logout</a>
+          {% else %}
+          <a class="nav__link" href="{% url 'login' %}">Sign in</a>
+          <a class="nav__link" href="{% url 'signup' %}">Create account</a>
           {% endif %}
         </div>
       </div>
     </nav>
   </header>
 
-  <!-- Main content begins -->
-  <div class="container outer-container">
-    {% block content %}
-    {% endblock %}
-  </div>
-
-  <!-- Footer begins -->
-  <footer class="footer bg-dark">
-    <div class="container text-center">
-      <span class="text-secondary">
-        &copy; Copyright
-        <script>document.write(new Date().getFullYear())</script> by Amin Sadeghi
+  {% if messages %}
+  <div class="messages" role="status" aria-live="polite">
+    {% for message in messages %}
+    <div class="alert alert--{{ message.tags|default:'info' }}">
+      <span class="alert__icon" aria-hidden="true">
+        {% if message.tags == 'success' %}<i class="fas fa-circle-check"></i>
+        {% elif message.tags == 'error' or message.tags == 'danger' %}<i class="fas fa-circle-exclamation"></i>
+        {% elif message.tags == 'warning' %}<i class="fas fa-triangle-exclamation"></i>
+        {% else %}<i class="fas fa-circle-info"></i>{% endif %}
       </span>
+      <span class="alert__text">{{ message }}</span>
+      <button type="button" class="alert__close" aria-label="Dismiss"
+        onclick="this.parentElement.remove()">&times;</button>
     </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="page {% block page_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p class="footer__brand">NOSTRADAMUS &middot; World Cup 2026</p>
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> Amin Sadeghi &middot;
+      Predict boldly, for the future favors the bold.</p>
+    <p class="footer__credit">
+      DNS by <a href="https://freedns.afraid.org/" target="_blank" rel="noopener">Free DNS</a>
+    </p>
   </footer>
 
+  {% block scripts %}{% endblock %}
 </body>
 
 </html>

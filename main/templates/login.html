@@ -1,40 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Sign in — Nostradamus{% endblock %}
+{% block page_class %}page--auth{% endblock %}
+
 {% block content %}
+<div class="auth-card card reveal reveal-1">
+  <div class="card__body">
+    <div class="auth-head">
+      <img class="auth-logo" src="{% static 'images/logo.png' %}" alt="Nostradamus">
+      <p class="eyebrow">The Oracle Awaits</p>
+      <h1>Welcome back</h1>
+      <p>Sign in to read the future and stake your claim.</p>
+    </div>
 
-<div class="container vertical-center">
-<div class="card bg-light" id="signup-form">
-<article class="card-body mx-auto" style="max-width: 400px;">
-<h3 class="card-title mb-4 mt-2 text-center">Sign in</h3>
-<form action="../login/" method="post" class="m-4">
-  {% csrf_token %}
-  <div class="input-group mb-3">
-    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-    <input name="username"
-           class="form-control"
-           placeholder="Username"
-           type="text" required>
-  </div>
-  <div class="input-group mb-3">
-    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-    <input name="password"
-           class="form-control"
-           placeholder="Password"
-           type="password" required>
-  </div>
-  {% if error_message %}
-    <div class="alert alert-danger">{{ error_message }}</div>
-  {% endif %}
-  <div class="form-group text-center">
-    <button type="submit" class="btn btn-primary btn-block"> Sign in </button>
-  </div>      
-  <div class="text-center p-2">
-    Don't have an account? <a href="{% url 'signup' %}" class="link-primary"> Sign up </a>
-  </div>
-</form>
-</article>
-</div>
-</div>
+    <form action="{% url 'login' %}" method="post" novalidate>
+      {% csrf_token %}
 
+      <div class="field">
+        <label class="field__label" for="username">Username</label>
+        <div class="input-group">
+          <span class="input-group__icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+          <input class="input" id="username" name="username" type="text"
+            autocomplete="username" placeholder="Your username" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <div class="input-group">
+          <span class="input-group__icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+          <input class="input" id="password" name="password" type="password"
+            autocomplete="current-password" placeholder="Your password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block btn--lg">
+        <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i> Enter
+      </button>
+    </form>
+
+    <p class="form-aside">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+  </div>
+</div>
 {% endblock %}

@@ -1,49 +1,149 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load my_filters %}
+
+{% block title %}{{ contest.name }} — Predict{% endblock %}
 
 {% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">{{ contest.tournament.name }}</p>
+  <h1>{{ contest.name }}</h1>
+  <p class="sub">Enter your scoreline for every match. Predictions lock at kickoff — tap the
+    <i class="fas fa-binoculars" aria-hidden="true"></i> to spy on others once a game begins.</p>
+</header>
 
-<h1 class="text-center">
-  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>
-</h1>
+<section class="card reveal reveal-1" style="margin-bottom:22px">
+  <div class="card__head">
+    <span class="card__icon" aria-hidden="true"><i class="fas fa-scroll"></i></span>
+    <h2>How points are won</h2>
+  </div>
+  <div class="card__body">
+    <div class="legend">
+      <div class="legend__item">
+        <span class="legend__pts">3</span>
+        <span class="legend__label">Exact score</span>
+      </div>
+      <div class="legend__item">
+        <span class="legend__pts">2</span>
+        <span class="legend__label">Correct goal difference</span>
+      </div>
+      <div class="legend__item">
+        <span class="legend__pts">1</span>
+        <span class="legend__label">Correct winner or draw</span>
+      </div>
+      <p class="legend__note">Knockout-stage matches count <b>double</b>.</p>
+    </div>
+  </div>
+</section>
 
-<div class="card text-center">
-  <h4 class="card-header">Group Stage</h4>
-  <div class="card-body">
-    <form action="{% url 'predict' contest.name %}" method="post" class="needs-validation" novalidate>
-      {% csrf_token %}
-      {% for games_and_bets_and_states, date in games_and_bets_and_states_by_date %}
-      <div class="date my-3">{{ date }}</div>
-      {% for game, bet, state in games_and_bets_and_states %}
-      <div class="row predict-row" style="--bs-columns: 10">
-        <div class="col team-home text-end">{{ game.home }}</div>
-        <div class="col-1 score-frame">
-          <input type="number" name="home_score" value="{{ bet.0 }}" class="form-control score {{ state }}">
+<form action="{% url 'predict' contest.name %}" method="post" id="predict-form">
+  {% csrf_token %}
+
+  {% for round in rounds %}
+  <div class="round reveal reveal-2" data-date="{{ round.date|date:'Y-m-d' }}">
+    <div class="round__date">{{ round.date|date:"l, j M Y" }}</div>
+    <div class="matches">
+      {% for item in round.games %}
+      <div class="match {% if item.locked %}match--locked{% endif %} {% if item.game.isplayoff %}match--playoff{% endif %}"
+        data-row data-game-id="{{ item.game.id }}"{% if not item.locked %} data-save-url="{% url 'save_bet' contest.name item.game.id %}"{% endif %}>
+        <div class="match__team match__team--home">
+          <span>{{ item.game.home }}</span>
         </div>
-        <div class="col-1 binoculars">
-          <a href="{% url 'show_bets' contest_name=contest.name game_id=game.id %}">
-            <i class="fas fa-binoculars show-bets-icon"></i>
-          </a>
+
+        <div class="match__center">
+          {% if item.locked %}
+          <div class="scorebox">
+            {% if item.home_pred == '' or item.away_pred == '' %}
+            <span class="score-readonly score-readonly--empty">No bet</span>
+            {% else %}
+            <span class="score-readonly">{{ item.home_pred }}</span>
+            <span class="score-sep">:</span>
+            <span class="score-readonly">{{ item.away_pred }}</span>
+            {% endif %}
+          </div>
+          <div class="match__meta">
+            {% if item.has_result %}
+            <span class="match__result">Final
+              <span>{{ item.game.home_score }}–{{ item.game.away_score }}</span></span>
+            {% else %}
+            <span class="match__time">Locked</span>
+            {% endif %}
+            <a class="peek" href="{% url 'show_bets' contest_name=contest.name game_id=item.game.id %}"
+              aria-label="See everyone's predictions for this match">
+              <i class="fas fa-binoculars" aria-hidden="true"></i>
+            </a>
+          </div>
+          {% else %}
+          <div class="scorebox">
+            <label class="visually-hidden" for="home_{{ item.game.id }}">
+              {{ item.game.home }} score</label>
+            <input class="score-input" type="number" inputmode="numeric" min="0"
+              id="home_{{ item.game.id }}" name="home_{{ item.game.id }}"
+              value="{{ item.home_pred }}" placeholder="–"
+              aria-label="{{ item.game.home }} score">
+            <span class="score-sep">:</span>
+            <label class="visually-hidden" for="away_{{ item.game.id }}">
+              {{ item.game.away }} score</label>
+            <input class="score-input" type="number" inputmode="numeric" min="0"
+              id="away_{{ item.game.id }}" name="away_{{ item.game.id }}"
+              value="{{ item.away_pred }}" placeholder="–"
+              aria-label="{{ item.game.away }} score">
+          </div>
+          <div class="match__meta">
+            {% if item.game.isplayoff %}
+            <span class="chip-playoff"><i class="fas fa-bolt" aria-hidden="true"></i> Knockout ×2</span>
+            {% else %}
+            <span class="match__time">{{ item.game.scheduled_datetime|date:"H:i" }}</span>
+            {% endif %}
+            <a class="peek" href="{% url 'show_bets' contest_name=contest.name game_id=item.game.id %}"
+              aria-label="See everyone's predictions for this match">
+              <i class="fas fa-binoculars" aria-hidden="true"></i>
+            </a>
+          </div>
+          {% endif %}
         </div>
-        <div class="col-1 score-frame">
-          <input type="number" name="away_score" value="{{ bet.1 }}" class="form-control score {{ state }}">
+
+        <div class="match__team match__team--away">
+          <span>{{ item.game.away }}</span>
         </div>
-        <div class="col text-start team-away">{{ game.away }}</div>
       </div>
       {% endfor %}
-      <hr>
-      {% endfor %}
-      <div class="col-md-2 col-8 mx-auto">
-        <button type="submit" class="btn btn-primary w-100 custom-submit-button">Save</button>
-      </div>
-    </form>
+    </div>
   </div>
-  <div class="card-footer text-muted quote">
-    The first principle is that you must not fool yourself and you are the easiest person to fool (R.F.)
+  {% empty %}
+  <p class="empty-note">No matches scheduled yet. Check back soon.</p>
+  {% endfor %}
+
+  {% if rounds %}
+  <div class="predict-bar">
+    <div class="savebar">
+      <span class="savebar__status" id="save-status" data-state="idle" role="status" aria-live="polite">
+        <i class="fas fa-bolt" aria-hidden="true"></i> Predictions save automatically
+      </span>
+      <button type="submit" class="btn btn--primary savebar__btn">
+        <i class="fas fa-floppy-disk" aria-hidden="true"></i> Save all
+      </button>
+    </div>
   </div>
+  {% endif %}
+</form>
+
+<p class="prophecy reveal reveal-3">
+  A very great deal more truth can become known than can be proven.
+  <cite>Richard Feynman</cite>
+</p>
+
+{% if rounds %}
+<div class="page-fabs">
+  <button type="button" class="fab" id="fab-today" title="Jump to today" aria-label="Jump to today">
+    <i class="fas fa-calendar-day" aria-hidden="true"></i>
+  </button>
+  <button type="button" class="fab fab--hidden" id="fab-top" title="Back to top" aria-label="Back to top">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
 </div>
+{% endif %}
+{% endblock %}
 
-<script src="{% static 'predict.js' %}"></script>
-
+{% block scripts %}
+<script src="{% static 'predict.js' %}" defer></script>
 {% endblock %}

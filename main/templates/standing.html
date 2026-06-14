@@ -1,58 +1,70 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ contest.name }} — Standings{% endblock %}
+
 {% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">{{ contest.tournament.name }}</p>
+  <h1>{{ contest.name }} <span class="gold-text">·</span> Leaderboard</h1>
+  <p class="sub">Exact = 3 pts · Goal difference = 2 pts · Winner = 1 pt · Knockouts count double.</p>
+</header>
 
-<h1 class="text-center">
-  {{ contest.tournament.name }} - <span id="tournament-name">{{ contest.name }}</span>
-</h1>
-
-<div class="card text-center">
-  <h4 class="card-header">Standing</h4>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th class="text-center" scope="col">Rank</th>
-        <th class="text-start" scope="col">Player</th>
-        <th class="text-center d-none d-lg-table-cell" scope="col">Exact</th>
-        <th class="text-center d-none d-lg-table-cell" scope="col">Goal</th>
-        <th class="text-center d-none d-lg-table-cell" scope="col">Winner</th>
-        <th class="text-center" scope="col">Points</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in rows %}
-      <tr>
-        <th class="text-center" scope="row">{{ forloop.counter }}</th>
-        <td class="text-start">{{ row.user }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.preds_exact }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.preds_goal_diff }}</td>
-        <td class="text-center d-none d-lg-table-cell">{{ row.preds_winner }}</td>
-        <td class="text-center">{{ row.points }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="card-footer text-muted quote">
-    A very great deal more truth can become known than can be proven. (R.F.)
+<section class="card reveal reveal-1">
+  <div class="card__head">
+    <span class="card__icon" aria-hidden="true"><i class="fas fa-ranking-star"></i></span>
+    <h2>Standings</h2>
   </div>
-</div>
+  <div class="card__body" style="overflow-x:auto">
+    <table class="board">
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col" class="col-player">Player</th>
+          <th scope="col" class="col-stat" title="Exact scores">Exact</th>
+          <th scope="col" class="col-stat" title="Correct goal difference">Goal Diff</th>
+          <th scope="col" class="col-stat" title="Correct winner">Winner</th>
+          <th scope="col">Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>
+            <span class="rank rank--{{ row.rank }}">
+              {% if row.rank == 1 %}<i class="fas fa-crown" aria-hidden="true"></i>
+              {% elif row.rank == 2 or row.rank == 3 %}<i class="fas fa-medal" aria-hidden="true"></i>
+              {% else %}{{ row.rank }}{% endif %}
+            </span>
+          </td>
+          <td class="col-player">
+            <span class="player">
+              <span class="player__avatar" aria-hidden="true">{{ row.user|stringformat:"s"|slice:":1" }}</span>
+              {{ row.user }}
+            </span>
+          </td>
+          <td class="col-stat">{{ row.preds_exact }}</td>
+          <td class="col-stat">{{ row.preds_goal_diff }}</td>
+          <td class="col-stat">{{ row.preds_winner }}</td>
+          <td><span class="points">{{ row.points }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="empty-note" style="text-align:center">
+            No players yet. Be the first to predict!</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card__foot">
+    <a href="{% url 'predict' contest.name %}"><i class="fas fa-pen-to-square" aria-hidden="true"></i>
+      Make or update your predictions</a>
+  </div>
+</section>
 
-<!-- <script>
-  $("table tr").eq(1).css("background-color", "gold")
-  $("table tr").eq(2).css("background-color", "lightgray")
-  $("table tr").eq(3).css("background-color", "peru")
-</script> -->
-
-<script>
-  // Add border to 1st, 2nd, and 3rd place
-  $('table tr:eq(1)').addClass("first-place");
-  $('table tr:eq(2)').addClass("second-place");
-  $('table tr:eq(3)').addClass("third-place");
-  // Add color-coded medal icon to 1st, 2nd, and 3rd place
-  $('table tr:eq(1) td:eq(0)').append(" <i class='fas fa-medal first-place'></i>");
-  $('table tr:eq(2) td:eq(0)').append(" <i class='fas fa-medal second-place'></i>");
-  $('table tr:eq(3) td:eq(0)').append(" <i class='fas fa-medal third-place'></i>");
-</script>
-
+<p class="prophecy reveal reveal-3">
+  A very great deal more truth can become known than can be proven.
+  <cite>Richard Feynman</cite>
+</p>
 {% endblock %}

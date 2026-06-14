@@ -1,17 +1,57 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Standings — Nostradamus{% endblock %}
+{% block page_class %}page--narrow{% endblock %}
+
 {% block content %}
+<header class="page-head reveal reveal-1">
+  <p class="eyebrow">Who reads the future best?</p>
+  <h1>Leaderboards</h1>
+  <p class="sub">Pick a competition to see where everyone stands.</p>
+</header>
 
-<h1 class="text-center">Active Standing Tables</h1>
-<div class="col-12">
-	<div class="card bg-light">
-	<article class="card-body mx-auto" style="max-width: 400px;">
-	  {% for contest in contests %}
-	  <a href="{% url 'standing' contest.name %}"><li>{{ contest.name }}</li></a>
-	  {% endfor %}
-	</article>
-	</div>
-</div>
+<section class="card reveal reveal-1">
+  <div class="card__head">
+    <span class="card__icon" aria-hidden="true"><i class="fas fa-ranking-star"></i></span>
+    <h2>Active competitions</h2>
+  </div>
+  <div class="card__body">
+    {% if contests.active %}
+    <ul class="tile-list">
+      {% for contest in contests.active %}
+      <li>
+        <a class="tile" href="{% url 'standing' contest.name %}">
+          <span>{{ contest.name }}</span>
+          <span class="tile__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-note">No active competitions right now.</p>
+    {% endif %}
+  </div>
+</section>
 
+{% if contests.past %}
+<section class="card reveal reveal-2" style="margin-top:18px">
+  <div class="card__head">
+    <span class="card__icon" aria-hidden="true"><i class="fas fa-clock-rotate-left"></i></span>
+    <h2>Past competitions</h2>
+  </div>
+  <div class="card__body">
+    <ul class="tile-list">
+      {% for contest in contests.past %}
+      <li>
+        <a class="tile tile--past" href="{% url 'standing' contest.name %}">
+          <span>{{ contest.name }}</span>
+          <span class="tile__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
 {% endblock %}
