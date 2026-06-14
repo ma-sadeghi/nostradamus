@@ -1,0 +1,28 @@
+# Project metadata and dependencies for the Nostradamus prediction app.
+[project]
+name = "nostradamus"
+version = "2.0.0"
+description = "A sports tournament prediction game built with Django."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = { text = "MIT" }
+dependencies = [
+    "django>=5.2,<5.3",
+    "django-import-export>=4.3",
+    "whitenoise>=6.8",
+]
+
+[project.optional-dependencies]
+# Extras needed to run the app behind a real WSGI server in production.
+prod = [
+    "gunicorn>=23.0",
+]
+
+[dependency-groups]
+# Development-only tools, installed by `uv sync` but not shipped to prod.
+dev = [
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
