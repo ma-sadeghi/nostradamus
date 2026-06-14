@@ -1,0 +1,14 @@
+.git
+.venv
+__pycache__/
+*.py[cod]
+# The database is bind-mounted at runtime, never baked into the image.
+db.sqlite3
+*.sqlite3
+*.sqlite3.bak
+.env
+.env.*
+!.env.example
+staticfiles/
+.preview/
+.DS_Store

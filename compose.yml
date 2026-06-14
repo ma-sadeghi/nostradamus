@@ -1,0 +1,22 @@
+# Nostradamus runs as a backend behind the host's shared `edge` ingress
+# (caddy-docker-proxy). It declares its own route via the caddy labels below, so
+# no other app's repo needs to know Nostradamus exists. The SQLite database lives
+# in a host bind mount so it survives rebuilds and is easy to back up.
+services:
+  web:
+    build: .
+    image: nostradamus
+    container_name: nostradamus
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /srv/nostradamus-data:/data
+    networks:
+      - edge
+    labels:
+      caddy: nostradamus.mine.bz
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+
+networks:
+  edge:
+    external: true
