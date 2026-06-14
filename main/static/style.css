@@ -258,6 +258,8 @@ h3 {
 }
 
 .nav__link {
+  flex: none;
+  white-space: nowrap;
   color: var(--ink-muted);
   font-size: 0.92rem;
   font-weight: 500;
@@ -273,6 +275,7 @@ h3 {
 }
 
 .nav__user {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -283,6 +286,15 @@ h3 {
   color: var(--gold);
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+/* Cap the display name on desktop so the nav width stays bounded (it's shown
+   in full inside the burger menu on mobile — see the breakpoint override). */
+.nav__user span {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav__user::before {
@@ -297,6 +309,7 @@ h3 {
 /* Dropdown (CSS only: hover + focus-within) */
 .dropdown {
   position: relative;
+  flex: none;
 }
 
 .dropdown__menu {
@@ -405,7 +418,9 @@ h3 {
   left: 0;
 }
 
-@media (max-width: 760px) {
+/* The full nav needs ~950px once it carries the profile chip and two
+   dropdowns; collapse to the burger above that so it never wraps mid-row. */
+@media (max-width: 980px) {
   .nav__burger {
     display: inline-flex;
   }
@@ -446,6 +461,11 @@ h3 {
   .nav__user {
     order: -1;
     margin-bottom: 4px;
+  }
+
+  /* Full name in the menu — there's room here. */
+  .nav__user span {
+    max-width: none;
   }
 
   /* On phones the dropdowns are a desktop hover convenience: unfurling every
@@ -1800,7 +1820,7 @@ html[data-theme="light"] .alert--danger { color: #b5302b; }
 html[data-theme="light"] .alert--info { color: #0e6b7d; }
 html[data-theme="light"] .alert--warning { color: #8a6410; }
 
-@media (max-width: 760px) {
+@media (max-width: 980px) {
   html[data-theme="light"] .nav__links { background: rgba(255, 253, 248, 0.97); }
 }
 

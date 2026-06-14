@@ -142,9 +142,6 @@
         </label>
 
         <div class="nav__links">
-          <button type="button" class="theme-toggle" aria-label="Toggle theme">
-            <i class="fas fa-circle-half-stroke"></i>
-          </button>
           {% if request.user.is_authenticated %}
           <a class="nav__user" href="{% url 'profile' %}" title="Your profile">
             {% include '_avatar.html' with profile=request.user.profile class='avatar--sm' %}
@@ -163,10 +160,14 @@
                 <a class="dropdown__item" role="menuitem"
                   href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
                 {% endfor %}
+                {% if contests.past %}
+                <div class="dropdown__divider"></div>
+                <div class="dropdown__label">Past</div>
                 {% for contest in contests.past %}
-                <a class="dropdown__item" role="menuitem" href="{% url 'predict' contest.name %}">
-                  <i class="fas fa-clock-rotate-left" style="font-size:.8em"></i> {{ contest.name }}</a>
+                <a class="dropdown__item" role="menuitem"
+                  href="{% url 'predict' contest.name %}">{{ contest.name }}</a>
                 {% endfor %}
+                {% endif %}
               {% else %}
                 <div class="dropdown__empty">No competitions yet</div>
               {% endif %}
@@ -204,6 +205,10 @@
           <a class="nav__link" href="{% url 'signup' %}">Create account</a>
           {% endif %}
         </div>
+
+        <button type="button" class="theme-toggle" aria-label="Toggle theme">
+          <i class="fas fa-circle-half-stroke"></i>
+        </button>
       </div>
     </nav>
   </header>
