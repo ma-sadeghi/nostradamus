@@ -1,11 +1,11 @@
-from django.conf import settings
-from django.conf.urls.static import static
+"""Project URL configuration wiring the admin and the main app."""
+
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    re_path(r"^", include("main.urls")),  # Assuming your main.urls uses regex.
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path("", include("main.urls")),
+]
 
 handler404 = "main.views.custom_404_view"
