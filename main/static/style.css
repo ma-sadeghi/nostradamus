@@ -448,10 +448,13 @@ h3 {
     margin-bottom: 4px;
   }
 
+  /* Inline the dropdown inside the burger menu. visibility must follow the
+     menu (inherit) — a hard `visible` here keeps the collapsed, invisible menu
+     hit-testable, so it floats over the page and steals every tap. */
   .dropdown__menu {
     position: static;
     opacity: 1;
-    visibility: visible;
+    visibility: inherit;
     transform: none;
     box-shadow: none;
     border: none;
