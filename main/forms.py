@@ -1,8 +1,11 @@
+import re
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from . import avatars
+# DiceBear avatar seeds: short, URL-safe tokens.
+AVATAR_SEED = re.compile(r"[A-Za-z0-9_-]{1,32}")
 
 
 class LoginForm(forms.Form):
@@ -26,11 +29,17 @@ class SimplePasswordForm(forms.Form):
 
 
 class ProfileForm(forms.Form):
-    """Edit display name and chosen avatar."""
+    """Edit display name and chosen avatar (a DiceBear seed)."""
 
     first_name = forms.CharField(max_length=20, required=False)
     last_name = forms.CharField(max_length=20, required=False)
-    avatar = forms.ChoiceField(choices=[(key, key) for key in avatars.KEYS])
+    avatar = forms.CharField(max_length=32)
+
+    def clean_avatar(self):
+        seed = self.cleaned_data["avatar"].strip()
+        if not AVATAR_SEED.fullmatch(seed):
+            raise forms.ValidationError("Invalid avatar.")
+        return seed
 
 
 class SignupForm(UserCreationForm):

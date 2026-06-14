@@ -138,7 +138,10 @@ def profile_view(request):
     data = {
         "form": profile_form,
         "password_form": password_form,
-        "avatars": avatars.choices(),
+        "avatar_options": [
+            {"seed": seed, "url": avatars.url(seed)}
+            for seed in avatars.options(profile.avatar)
+        ],
         "contests": utils.get_contests(request.user),
     }
     return render(request, "profile.html", data)

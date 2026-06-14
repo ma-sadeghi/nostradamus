@@ -38,13 +38,13 @@ class Profile(models.Model):
     # Set when an account is handed out with a temporary password; forces a
     # password change on the next login.
     must_change_password = models.BooleanField(default=False)
-    # Preset avatar key (see main.avatars); a random one is assigned by default.
-    avatar = models.CharField(max_length=24, default=avatars.random_key)
+    # DiceBear avatar seed (see main.avatars); a random one is assigned by default.
+    avatar = models.CharField(max_length=32, default=avatars.random_seed)
 
     @property
-    def avatar_data(self):
-        """The icon/colours for this profile's avatar."""
-        return avatars.get(self.avatar)
+    def avatar_url(self):
+        """The DiceBear SVG URL for this profile's avatar."""
+        return avatars.url(self.avatar)
 
     def __str__(self):
         return self.user.username

@@ -1829,20 +1829,18 @@ html[data-theme="light"] .alert--warning { color: #8a6410; }
 /* ============================================================= AVATARS */
 .avatar {
   flex: none;
-  display: inline-grid;
-  place-items: center;
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--av-c1, #5cd6e6), var(--av-c2, #3b82f6));
-  color: #fff;
-  font-size: 0.8rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  object-fit: cover;
+  background: var(--surface-3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  vertical-align: middle;
 }
 
-.avatar--sm { width: 26px; height: 26px; font-size: 0.7rem; }
-.avatar--md { width: 56px; height: 56px; font-size: 1.4rem; }
-.avatar--lg { width: 84px; height: 84px; font-size: 2.1rem; }
+.avatar--sm { width: 26px; height: 26px; }
+.avatar--md { width: 60px; height: 60px; }
+.avatar--lg { width: 84px; height: 84px; }
 
 /* The nav profile chip carries its own avatar, so drop the status dot. */
 .nav__user::before { display: none; }

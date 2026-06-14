@@ -504,10 +504,10 @@ class ProfileTests(BaseData):
         self.assertEqual(self.user.last_name, "Sadeghi")
         self.assertEqual(self.user.profile.avatar, "moon")
 
-    def test_save_profile_rejects_unknown_avatar(self):
+    def test_save_profile_rejects_unsafe_avatar(self):
         self.client.post(
             reverse("profile"),
-            {"save_profile": "1", "first_name": "X", "avatar": "not-an-avatar"},
+            {"save_profile": "1", "first_name": "X", "avatar": "bad/seed"},
         )
         self.user.refresh_from_db()
         self.assertNotEqual(self.user.first_name, "X")
@@ -522,17 +522,20 @@ class ProfileTests(BaseData):
 
 
 class AvatarTests(BaseData):
-    def test_new_profile_gets_a_valid_random_avatar(self):
+    def test_new_profile_gets_a_random_seed(self):
         user = User.objects.create_user("freshpal", password="Predict2026!")
-        self.assertIn(user.profile.avatar, avatars.KEYS)
+        self.assertTrue(user.profile.avatar)
 
-    def test_avatar_data_has_icon_and_colours(self):
-        data = avatars.get("moon")
-        self.assertIn("icon", data)
-        self.assertIn("c1", data)
+    def test_avatar_url_uses_dicebear(self):
+        rendered = avatars.url("Felix")
+        self.assertIn("api.dicebear.com", rendered)
+        self.assertIn(avatars.STYLE, rendered)
+        self.assertIn("seed=Felix", rendered)
 
-    def test_unknown_avatar_key_falls_back(self):
-        self.assertEqual(avatars.get("bogus"), avatars.AVATARS[avatars.DEFAULT])
+    def test_options_put_current_first(self):
+        opts = avatars.options("MyOwnSeed")
+        self.assertEqual(opts[0], "MyOwnSeed")
+        self.assertIn("Felix", opts)
 
 
 class FlagTests(TestCase):
