@@ -1,143 +1,186 @@
+"""Request handlers for auth, predictions, standings and contest management."""
+
 from collections.abc import Mapping
 from itertools import groupby
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_POST
 
 from . import forms, models, utils
 from .models import Tournament
 
 
+def _parse_score(raw):
+    """Parses a submitted score into a non-negative int, or None if invalid."""
+    raw = (raw or "").strip()
+    if not raw:
+        return None
+    try:
+        value = int(raw)
+    except ValueError:
+        return None
+    return value if value >= 0 else None
+
+
 @login_required
 def index(request):
-    # return render(request, 'home.html')
-    return HttpResponseRedirect(reverse("home"))
+    return redirect("home")
 
 
 class SignupView(View):
     def get(self, request):
-        return render(request, "signup.html")
+        return render(request, "signup.html", {"form": forms.SignupForm()})
 
     def post(self, request):
         form = forms.SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
-            if user is None:
-                return HttpResponseRedirect("/home")
-            login(request, user)
-            return HttpResponseRedirect(reverse("home"))
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password1"]
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+            return redirect("home")
         return render(request, "signup.html", {"form": form})
 
 
 class LoginView(View):
     def get(self, request):
-        form = forms.LoginForm()
-        return render(request, "login.html", {"form": form})
+        return render(request, "login.html", {"form": forms.LoginForm()})
 
     def post(self, request):
         form = forms.LoginForm(request.POST)
+        user = None
         if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            user = authenticate(username=username, password=password)
-            if user is None:
-                return render(
-                    request,
-                    "login.html",
-                    {
-                        "form": form,
-                        "error_message": "Invalid username or password.",
-                    },
-                )
-            login(request, user)
-            return HttpResponseRedirect(reverse("home"))
+            user = authenticate(
+                request,
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password"],
+            )
+        if user is None:
+            messages.error(request, "Invalid username or password.")
+            return render(request, "login.html", {"form": form})
+        login(request, user)
+        return redirect("home")
 
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("login"))
+    return redirect("login")
+
+
+@login_required
+def force_password_change(request):
+    """Let a user set a new password (any value); clears the must-change flag."""
+    if request.method == "POST":
+        form = forms.SimplePasswordForm(request.POST)
+        if form.is_valid():
+            request.user.set_password(form.cleaned_data["new_password1"])
+            request.user.save()
+            profile = request.user.profile
+            profile.must_change_password = False
+            profile.save(update_fields=["must_change_password"])
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "Password updated — you're all set!")
+            return redirect("home")
+    else:
+        form = forms.SimplePasswordForm()
+    return render(request, "change_password.html", {"form": form})
 
 
 @login_required
 def home_view(request):
-    contests = utils.get_contests(request.user)
-    tournaments = Tournament.objects.all()
-    data = {"contests": contests, "tournaments": tournaments}
+    data = {
+        "contests": utils.get_contests(request.user),
+        "tournaments": Tournament.objects.all(),
+    }
     return render(request, "home.html", data)
 
 
-# NOTE: name of the 2nd arg (contest) must match with 'contest' in home.html
 class PredictView(View):
     def get(self, request, contest):
-        contest = request.user.contests.filter(name=contest)[0]
-        # Comment the next line and uncomment the line after, once group stage is completed!
-        games = contest.tournament.games.all().order_by("scheduled_datetime")
-        # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
-        games_by_date = [list(g) for t, g in groupby(games, key=utils.extract_date)]
-        bets_by_date = []
-        games_and_bets_and_states_by_date = []
-        bets = []
-        for games in games_by_date:
-            bets = []
-            states = []
-            for game in games:
-                bet = request.user.bets.filter(game=game, contest=contest)
-                bet = [bet[0].home_score, bet[0].away_score] if bet else ["", ""]
-                bets.append(bet)
-                states.append("played" if utils.is_played(game) else "not_played")
-            bets_by_date.append(bets)
-            games_and_bets_and_states_by_date.append(
-                (zip(games, bets, states), game.scheduled_datetime.date())
-            )
+        contest = get_object_or_404(request.user.contests, name=contest)
+        games = contest.tournament.games.select_related("home", "away").order_by(
+            "scheduled_datetime"
+        )
+        bets = {b.game_id: b for b in request.user.bets.filter(contest=contest)}
+        rounds = []
+        for date, group in groupby(games, key=utils.extract_date):
+            items = []
+            for game in group:
+                bet = bets.get(game.id)
+                items.append(
+                    {
+                        "game": game,
+                        "home_pred": bet.home_score if bet else "",
+                        "away_pred": bet.away_score if bet else "",
+                        "locked": game.is_locked,
+                        "has_result": game.has_result,
+                    }
+                )
+            rounds.append({"date": date, "games": items})
         data = {
-            "games_and_bets_and_states_by_date": games_and_bets_and_states_by_date,
             "contest": contest,
             "contests": utils.get_contests(request.user),
+            "rounds": rounds,
         }
         return render(request, "predict.html", data)
 
     def post(self, request, contest):
-        req_dict = dict(request.POST.lists())
-        home_scores = req_dict["home_score"]
-        away_scores = req_dict["away_score"]
-
-        contest = request.user.contests.filter(name=contest)[0]
-        # Comment the next line and uncomment the line after, once group stage is completed!
-        games = contest.tournament.games.all().order_by("scheduled_datetime")
-        # games = contest.tournament.games.filter(isplayoff=True).order_by('scheduled_datetime')
-
-        for home_score, away_score, game in zip(home_scores, away_scores, games):
-            if utils.is_played(game):  # no update if time passed
+        contest = get_object_or_404(request.user.contests, name=contest)
+        games = contest.tournament.games.all()
+        bets = {b.game_id: b for b in request.user.bets.filter(contest=contest)}
+        saved = 0
+        for game in games:
+            if game.is_locked:  # cannot change a prediction after kickoff
                 continue
+            home = _parse_score(request.POST.get(f"home_{game.id}"))
+            away = _parse_score(request.POST.get(f"away_{game.id}"))
+            if home is None or away is None:  # ignore blank or partial rows
+                continue
+            bet = bets.get(game.id)
+            if bet is None:
+                models.Bet.objects.create(
+                    user=request.user,
+                    game=game,
+                    contest=contest,
+                    home_score=home,
+                    away_score=away,
+                )
+                saved += 1
+            elif bet.home_score != home or bet.away_score != away:
+                bet.home_score = home
+                bet.away_score = away
+                bet.save()
+                saved += 1
+        messages.success(request, f"Saved {saved} prediction(s).")
+        return redirect("predict", contest=contest.name)
 
-            bet_query = request.user.bets.filter(game=game, contest=contest)
-            old_bet = (
-                [bet_query[0].home_score, bet_query[0].away_score]
-                if bet_query
-                else ["", ""]
-            )
-            if home_score != old_bet[0] or away_score != old_bet[1]:
-                if bet_query:  # update existing
-                    bet_query.update(home_score=home_score)
-                    bet_query.update(away_score=away_score)
-                else:
-                    new_bet = models.Bet(
-                        user=request.user,
-                        game=game,
-                        contest=contest,
-                        home_score=home_score,
-                        away_score=away_score,
-                    )
-                    new_bet.save()
-        return HttpResponseRedirect("./")
+
+@login_required
+@require_POST
+def save_bet(request, contest, game_id):
+    """Autosave a single prediction (one match) for the current user."""
+    contest = get_object_or_404(request.user.contests, name=contest)
+    game = get_object_or_404(models.Game, id=game_id, tournament=contest.tournament)
+    if game.is_locked:
+        return JsonResponse({"ok": False, "error": "locked"}, status=409)
+    home = _parse_score(request.POST.get("home_score"))
+    away = _parse_score(request.POST.get("away_score"))
+    if home is None or away is None:
+        return JsonResponse({"ok": False, "error": "invalid"}, status=400)
+    models.Bet.objects.update_or_create(
+        user=request.user,
+        game=game,
+        contest=contest,
+        defaults={"home_score": home, "away_score": away},
+    )
+    return JsonResponse({"ok": True, "home": home, "away": away})
 
 
 @login_required
@@ -155,77 +198,106 @@ def count_points(preds: Mapping[str, int], w_exact: int, w_goal_diff: int, w_win
     )
 
 
-# @cache_page(24 * 3600)  # Reset cache every 1 week
 @login_required
 def show_standing(request, contest):
-    contest = request.user.contests.filter(name=contest).all()[0]
-    users = contest.users.all()
-    rows = []
+    contest = get_object_or_404(request.user.contests, name=contest)
 
     w_exact = 3
     w_goal_diff = 2
     w_winner = 1
     playoffs_multiplier = 2
 
-    for user in users:
+    rows = []
+    for user in contest.users.all():
         preds = utils.get_correct_predictions(user, contest)
-        preds_exact = preds["groupstage"]["exact"] + preds["playoffs"]["exact"]
-        preds_goal_diff = preds["groupstage"]["goal-diff"] + preds["playoffs"]["goal-diff"]
-        preds_winner = preds["groupstage"]["winner"] + preds["playoffs"]["winner"]
-        points_groupstage = count_points(preds["groupstage"], w_exact, w_goal_diff, w_winner)
+        points_groupstage = count_points(
+            preds["groupstage"], w_exact, w_goal_diff, w_winner
+        )
         points_playoffs = count_points(preds["playoffs"], w_exact, w_goal_diff, w_winner)
-        row = {
-            "user": user,
-            "preds_exact": preds_exact,
-            "preds_goal_diff": preds_goal_diff,
-            "preds_winner": preds_winner,
-            "points": points_groupstage + points_playoffs * playoffs_multiplier,
-        }
-        rows.append(row)
+        rows.append(
+            {
+                "user": user,
+                "preds_exact": preds["groupstage"]["exact"] + preds["playoffs"]["exact"],
+                "preds_goal_diff": preds["groupstage"]["goal-diff"]
+                + preds["playoffs"]["goal-diff"],
+                "preds_winner": preds["groupstage"]["winner"] + preds["playoffs"]["winner"],
+                "points": points_groupstage + points_playoffs * playoffs_multiplier,
+            }
+        )
 
-    rows = sorted(rows, key=lambda x: x["points"], reverse=True)
+    rows.sort(
+        key=lambda r: (r["points"], r["preds_exact"], r["preds_goal_diff"]),
+        reverse=True,
+    )
+    # Standard competition ranking (ties share a rank, e.g. 1, 2, 2, 4).
+    previous_points = None
+    for position, row in enumerate(rows, start=1):
+        if row["points"] != previous_points:
+            row["rank"] = position
+            previous_points = row["points"]
+        else:
+            row["rank"] = rows[position - 2]["rank"]
+
     data = {
         "rows": rows,
         "contest": contest,
         "contests": utils.get_contests(request.user),
     }
-
     return render(request, "standing.html", data)
 
 
 @login_required
+@require_POST
 def join_contest(request):
-    user = request.user
-    contest_id = request.POST["contest-id"]
-    contest = models.Contest.objects.filter(name=contest_id)
+    name = "_".join(request.POST.get("contest-id", "").split())
+    contest = models.Contest.objects.filter(name=name).first()
     if not contest:
-        return redirect(reverse("home") + "?contest_not_found=True")
-    contest = contest[0]
-    if user not in contest.users.all():
-        contest.users.add(user)
-        return redirect(reverse("home") + "?joined_contest=True")
-    return redirect(reverse("home") + "?already_member=True")
+        messages.error(request, "Competition not found. Check the ID and try again.")
+        return redirect("home")
+    if request.user in contest.users.all():
+        messages.info(request, f"You're already in “{contest.name}”.")
+    else:
+        contest.users.add(request.user)
+        messages.success(request, f"Joined “{contest.name}”!")
+    return redirect("home")
+
+
+@login_required
+@require_POST
+def create_contest(request):
+    name = "_".join(request.POST.get("contest-id", "").split())
+    tournament = models.Tournament.objects.filter(
+        id=request.POST.get("tournament", "")
+    ).first()
+    if not name:
+        messages.error(request, "Please enter a competition name.")
+        return redirect("home")
+    if tournament is None:
+        messages.error(request, "Please choose a tournament.")
+        return redirect("home")
+    if models.Contest.objects.filter(name=name).exists():
+        messages.error(request, f"A competition called “{name}” already exists.")
+        return redirect("home")
+    contest = models.Contest.objects.create(tournament=tournament, name=name)
+    contest.users.add(request.user)
+    messages.success(request, f"Created “{contest.name}” — share this ID with friends!")
+    return redirect("predict", contest=contest.name)
 
 
 @login_required
 def show_bets(request, contest_name, game_id):
-    contests = utils.get_contests(request.user)
-    contest = models.Contest.objects.get(name=contest_name)
-    game = models.Game.objects.get(id=game_id)
-    bets = models.Bet.objects.filter(contest=contest, game=game)
-    results = [utils.evaluate_bet(bet) for bet in bets]
-    bets_and_results = list(zip(bets, results))
-    # We need to pass 'contests' for navbar to work (standings list)
+    contest = get_object_or_404(request.user.contests, name=contest_name)
+    game = get_object_or_404(models.Game, id=game_id, tournament=contest.tournament)
     data = {
-        "bets_and_results": bets_and_results,
         "game": game,
         "contest": contest,
-        "contests": contests,
+        "contests": utils.get_contests(request.user),
     }
-    if utils.is_played(game):
-        return render(request, "bets.html", data)
-    else:
+    if not game.is_locked:
         return render(request, "bets_hidden.html", data)
+    bets = models.Bet.objects.filter(contest=contest, game=game).select_related("user")
+    data["bets_and_results"] = [(bet, utils.evaluate_bet(bet)) for bet in bets]
+    return render(request, "bets.html", data)
 
 
 def custom_404_view(request, exception):

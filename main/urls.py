@@ -1,29 +1,38 @@
+"""URL routes for the main app: auth, predictions, standings and contests."""
+
 from django.contrib.auth.decorators import login_required
-from django.urls import re_path
+from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    re_path(r"^$", views.index, name="index"),
-    re_path(r"^standing/$", views.standing_home_view, name="standing_home"),
-    re_path(r"^home/$", views.home_view, name="home"),
-    re_path(r"^accounts/login/$", views.LoginView.as_view(), name="login"),
-    re_path(r"^accounts/logout/$", views.logout_view, name="logout"),
-    re_path(r"^accounts/signup/$", views.SignupView.as_view(), name="signup"),
-    re_path(
-        r"^contests/(?P<contest>\w{0,50})/standing/$",
-        views.show_standing,
-        name="standing",
+    path("", views.index, name="index"),
+    path("home/", views.home_view, name="home"),
+    path("standing/", views.standing_home_view, name="standing_home"),
+    path("accounts/login/", views.LoginView.as_view(), name="login"),
+    path("accounts/logout/", views.logout_view, name="logout"),
+    path("accounts/signup/", views.SignupView.as_view(), name="signup"),
+    path(
+        "accounts/password/change/",
+        views.force_password_change,
+        name="force_password_change",
     ),
-    re_path(
-        r"^contests/(?P<contest>\w{0,50})/predict/$",
+    path("contests/join/", views.join_contest, name="join_contest"),
+    path("contests/create/", views.create_contest, name="create_contest"),
+    path("contests/<str:contest>/standing/", views.show_standing, name="standing"),
+    path(
+        "contests/<str:contest>/predict/",
         login_required(views.PredictView.as_view()),
         name="predict",
     ),
-    re_path(
-        r"^contests/(?P<contest_name>\w{0,50})/bets/game/(?P<game_id>\w{0,50})",
-        login_required(views.show_bets),
+    path(
+        "contests/<str:contest>/predict/save/<int:game_id>/",
+        views.save_bet,
+        name="save_bet",
+    ),
+    path(
+        "contests/<str:contest_name>/bets/game/<int:game_id>/",
+        views.show_bets,
         name="show_bets",
     ),
-    re_path(r"^contests/join/$", views.join_contest, name="join_contest"),
 ]
